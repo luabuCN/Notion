@@ -76,6 +76,7 @@ const DocumentsList = ({
             level={level}
             onExpand={() => onExpand(document._id)}
             expanded={expanded[document._id]}
+            documentIcon={document.icon}
           />
           {expanded[document._id] && (
             <DocumentsList parentDocuments={document._id} level={level + 1} />

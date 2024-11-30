@@ -108,6 +108,7 @@ const Item = ({
           <ChevronIcon className="h-4 w-4 rounded-sm hover:bg-neutral-300" />
         </div>
       )}
+
       {documentIcon ? (
         <div className="shrink-0 h-[18px] mr-2 ">{documentIcon}</div>
       ) : (
