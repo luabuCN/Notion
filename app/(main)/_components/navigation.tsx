@@ -10,7 +10,7 @@ import {
   Settings,
   Trash,
 } from "lucide-react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ElementRef } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./user-item";
@@ -31,6 +31,7 @@ import Navbar from "./navbar";
 import { Button } from "@/components/ui/button";
 const Navigation = () => {
   const settings = useSetting();
+  const router = useRouter();
   const search = uesSearch();
   const params = useParams();
   const pathname = usePathname();
@@ -120,7 +121,7 @@ const Navigation = () => {
   const handleCreate = () => {
     const promise = create({
       title: "Untitled",
-    });
+    }).then((documentId) => router.push(`/documents/${documentId}`));
 
     toast.promise(promise, {
       loading: "Creating a new note...",
@@ -133,7 +134,7 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          " group/sidebar h-full bg-secondary overflow-auto relative flex w-60 flex-col z-[99999]",
+          " group/sidebar h-full bg-secondary overflow-auto relative flex w-60 flex-col z-[999]",
           isResetting && "transition-all ease-in-out duration-300",
           isMobile && "w-0"
         )}
