@@ -44,10 +44,6 @@ const Navigation = () => {
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   useEffect(() => {
-    isMobile ? collapse() : resetWidth();
-  }, [isMobile]);
-
-  useEffect(() => {
     if (isMobile) {
       collapse();
     }
@@ -129,6 +125,10 @@ const Navigation = () => {
       error: "Failed to create a new note",
     });
   };
+
+  useEffect(() => {
+    isMobile ? collapse() : resetWidth();
+  }, [isMobile, pathname, resetWidth]);
   return (
     <>
       <aside
