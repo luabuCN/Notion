@@ -1,27 +1,37 @@
 "use client";
 
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { Document } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Item from "./item";
 import { cn } from "@/lib/utils";
 import { FileIcon } from "lucide-react";
+import { useDocuments, fetchDocuments } from "@/hooks/use-documents";
 
 interface DocumentsListProps {
-  parentDocuments?: Id<"documents">;
+  parentDocument?: string;
   level?: number;
-  data?: Doc<"documents">[];
+  data?: Document[];
 }
+
 const DocumentsList = ({
-  parentDocuments,
+  parentDocument,
   level = 0,
   data,
 }: DocumentsListProps) => {
   const params = useParams();
   const router = useRouter();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+  const { documents } = useDocuments();
+
+  useEffect(() => {
+    const loadDocuments = async () => {
+      await fetchDocuments();
+      setLoading(false);
+    };
+    loadDocuments();
+  }, []);
 
   const onExpand = (documentId: string) => {
     setExpanded((prev) => ({
@@ -30,15 +40,15 @@ const DocumentsList = ({
     }));
   };
 
-  const documents = useQuery(api.documents.getSidebar, {
-    parentDocument: parentDocuments,
-  });
+  const filteredDocuments = documents.filter(
+    (doc) => doc.parentDocument === parentDocument && !doc.isArchived
+  );
 
   const onRedirect = (documentId: string) => {
     router.push(`/documents/${documentId}`);
   };
 
-  if (document === undefined) {
+  if (loading) {
     return (
       <>
         <Item.Skeleton level={level} />
@@ -51,8 +61,9 @@ const DocumentsList = ({
       </>
     );
   }
-  return (
-    <>
+
+  if (filteredDocuments.length === 0) {
+    return (
       <p
         style={{
           paddingLeft: level ? `${level * 12 + 25}px` : undefined,
@@ -65,21 +76,26 @@ const DocumentsList = ({
       >
         No documents
       </p>
-      {documents?.map((document) => (
-        <div key={document._id}>
+    );
+  }
+
+  return (
+    <>
+      {filteredDocuments.map((document) => (
+        <div key={document.id}>
           <Item
-            id={document._id}
-            onClick={() => onRedirect(document._id)}
+            id={document.id}
+            onClick={() => onRedirect(document.id)}
             label={document.title}
             icon={FileIcon}
-            active={params.documentId === document._id}
+            active={params.documentId === document.id}
             level={level}
-            onExpand={() => onExpand(document._id)}
-            expanded={expanded[document._id]}
-            documentIcon={document.icon}
+            onExpand={() => onExpand(document.id)}
+            expanded={expanded[document.id]}
+            documentIcon={document.icon || undefined}
           />
-          {expanded[document._id] && (
-            <DocumentsList parentDocuments={document._id} level={level + 1} />
+          {expanded[document.id] && (
+            <DocumentsList parentDocument={document.id} level={level + 1} />
           )}
         </div>
       ))}

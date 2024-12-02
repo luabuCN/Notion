@@ -1,31 +1,30 @@
 "use client";
 
 import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenu,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/clerk-react";
-import { useMutation } from "convex/react";
-import {
   ChevronDown,
   ChevronRight,
-  MoreHorizontal,
+  LucideIcon,
   Plus,
-  Trash,
-  type LucideIcon,
+  MoreHorizontal,
+  Trash
 } from "lucide-react";
+import { Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/clerk-react";
+import { useDocuments } from "@/hooks/use-documents";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 interface ItemProps {
-  id?: Id<"documents">;
+  id?: string;
   documentIcon?: string;
   active?: boolean;
   expanded?: boolean;
@@ -36,7 +35,8 @@ interface ItemProps {
   onClick?: () => void;
   icon: LucideIcon;
 }
-const Item = ({
+
+export const Item = ({
   id,
   label,
   onClick,
@@ -45,22 +45,17 @@ const Item = ({
   documentIcon,
   isSearch,
   level = 0,
-  expanded,
   onExpand,
+  expanded,
 }: ItemProps) => {
   const { user } = useUser();
   const router = useRouter();
-  const create = useMutation(api.documents.create);
-  const archive = useMutation(api.documents.archive);
-  const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (!id) return;
-    const promise = archive({ id });
-    toast.promise(promise, {
-      loading: "Moving to trash...",
-      success: "Note to trash!",
-      error: "Failed  to trash",
-    });
-  };
+  const { remove, restore, archive } = useDocuments((store) => ({
+    remove: store.remove,
+    restore: store.restore,
+    archive: store.archive
+  }));
+
   const handleExpand = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -68,74 +63,109 @@ const Item = ({
     onExpand?.();
   };
 
-  const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onArchive = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     event.stopPropagation();
     if (!id) return;
-    const promise = create({ title: "Untitled", parentDocument: id }).then(
-      (documentId) => {
-        if (!expanded) {
-          onExpand?.();
-        }
-        router.push(`/documents/${documentId}`);
-        toast.promise(promise, {
-          loading: "Creating a new note...",
-          success: "New note created!",
-          error: "Failed to create a new note",
-        });
-      }
-    );
+    
+    const promise = archive(id);
+
+    toast.promise(promise, {
+      loading: "Moving to trash...",
+      success: "Note moved to trash!",
+      error: "Failed to archive note."
+    });
+  };
+
+  const onRestore = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    if (!id) return;
+    
+    const promise = restore(id);
+
+    toast.promise(promise, {
+      loading: "Restoring note...",
+      success: "Note restored!",
+      error: "Failed to restore note."
+    });
+  };
+
+  const onRemove = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    if (!id) return;
+    
+    const promise = remove(id);
+
+    toast.promise(promise, {
+      loading: "Deleting note...",
+      success: "Note deleted!",
+      error: "Failed to delete note."
+    });
   };
 
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
+
   return (
     <div
       onClick={onClick}
       role="button"
       style={{
-        paddingLeft: level ? `${level * 12 + 12}px` : "12px",
+        paddingLeft: level ? `${(level * 12) + 12}px` : "12px"
       }}
       className={cn(
         "group min-h-[27px] text-sm py-1 pr-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium",
-        active && " bg-primary/5 text-primary"
+        active && "bg-primary/5 text-primary"
       )}
     >
       {!!id && (
         <div
           role="button"
-          className=" h-full rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 mr-1"
+          className="h-full rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 mr-1"
           onClick={handleExpand}
         >
-          <ChevronIcon className="h-4 w-4 rounded-sm hover:bg-neutral-300" />
+          <ChevronIcon
+            className="h-4 w-4 shrink-0 text-muted-foreground/50"
+          />
         </div>
       )}
-
       {documentIcon ? (
-        <div className="shrink-0 h-[18px] mr-2 ">{documentIcon}</div>
+        <div className="shrink-0 mr-2 text-[18px]">
+          {documentIcon}
+        </div>
       ) : (
-        <Icon className=" shrink-0 h-[18px] mr-2 text-muted-foreground" />
+        <Icon
+          className="shrink-0 h-[18px] w-[18px] mr-2 text-muted-foreground"
+        />
       )}
-
-      <span className=" truncate">{label}</span>
+      <span className="truncate">
+        {label}
+      </span>
       {isSearch && (
-        <kbd className=" ml-auto pointer-events-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-          <span className=" text-sx">⌘</span>
-          <p className="text-[14px]">k</p>
+        <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <span className="text-xs">⌘</span>K
         </kbd>
       )}
-
       {!!id && (
         <div className="ml-auto flex items-center gap-x-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuTrigger
+              onClick={(e) => e.stopPropagation()}
+              asChild
+            >
               <div
                 role="button"
-                className=" opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
               >
-                <MoreHorizontal />
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className=" w-60"
+              className="w-60"
               align="start"
               side="right"
               forceMount
@@ -145,15 +175,15 @@ const Item = ({
                 Delete
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <div className=" text-xs text-muted-foreground p-2">
-                Last edited by {user?.fullName}
+              <div className="text-xs text-muted-foreground p-2">
+                Last edited by: {user?.fullName}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
           <div
             role="button"
-            onClick={onCreate}
-            className=" opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            onClick={(e) => e.stopPropagation()}
+            className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
           >
             <Plus className="h-4 w-4 text-muted-foreground" />
           </div>
@@ -167,7 +197,7 @@ Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
   return (
     <div
       style={{
-        paddingLeft: level ? `${level * 12 + 12}px` : "12px",
+        paddingLeft: level ? `${(level * 12) + 12}px` : "12px"
       }}
       className="flex gap-x-2 py-[3px]"
     >
@@ -176,5 +206,3 @@ Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
     </div>
   );
 };
-
-export default Item;

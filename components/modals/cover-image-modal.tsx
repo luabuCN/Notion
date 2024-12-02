@@ -4,15 +4,12 @@ import { useCoverImage } from "@/hooks/use-cover-image";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { useState } from "react";
 import { useEdgeStore } from "@/lib/edgestore";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
-import type { Id } from "@/convex/_generated/dataModel";
 import { SingleImageDropzone } from "../single-image-dropzone";
+import axios from "axios";
 
 const CoverImageModal = () => {
   const params = useParams();
-  const update = useMutation(api.documents.update);
   const [file, setFile] = useState<File>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { edgestore } = useEdgeStore();
@@ -29,19 +26,24 @@ const CoverImageModal = () => {
       setIsSubmitting(true);
       setFile(file);
 
-      const res = await edgestore.publicFiles.upload({
-        options: {
-          replaceTargetUrl: coverImage.url,
-        },
-        file,
-      });
+      try {
+        const res = await edgestore.publicFiles.upload({
+          options: {
+            replaceTargetUrl: coverImage.url,
+          },
+          file,
+        });
 
-      await update({
-        id: params.documentId as Id<"documents">,
-        coverImage: res.url,
-      });
+        await axios.patch(`/api/documents/${params.documentId}`, {
+          coverImage: res.url,
+        });
 
-      onClose();
+        onClose();
+      } catch (error) {
+        console.error("Failed to update cover image:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -49,14 +51,14 @@ const CoverImageModal = () => {
     <Dialog open={coverImage.isOpen} onOpenChange={coverImage.onClose}>
       <DialogContent>
         <DialogHeader>
-          <h2 className=" text-center text-lg font-semibold">Cover Image</h2>
+          <h2 className="text-center text-lg font-semibold">Cover Image</h2>
         </DialogHeader>
         <SingleImageDropzone
-          className=" w-full outline-none"
+          className="w-full outline-none"
           disabled={isSubmitting}
           onChange={onChange}
           value={file}
-        ></SingleImageDropzone>
+        />
       </DialogContent>
     </Dialog>
   );

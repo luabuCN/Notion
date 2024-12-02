@@ -2,26 +2,32 @@
 
 import IconPicker from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
 import { useCoverImage } from "@/hooks/use-cover-image";
-import { useMutation } from "convex/react";
 import { ImageIcon, Smile, X } from "lucide-react";
 import { useRef, useState, type ElementRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface ToolbarProps {
-  initialData: Doc<"documents">;
+  initialData: {
+    id: string;
+    title: string;
+    icon?: string;
+    coverImage?: string;
+    preview?: boolean;
+  };
   preview?: boolean;
 }
+
 const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   const inputRef = useRef<ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialData?.title);
+  const [icon, setIcon] = useState(initialData?.icon);
 
-  const update = useMutation(api.documents.update);
-  const removeIcon = useMutation(api.documents.removeIcon);
   const coverImage = useCoverImage();
+
   const enableInput = () => {
     if (preview) return;
     setIsEditing(true);
@@ -36,12 +42,15 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
     setIsEditing(false);
   };
 
-  const onInput = (value: string) => {
-    setValue(value);
-    update({
-      id: initialData._id,
-      title: value || "Untitled",
-    });
+  const onInput = async (value: string) => {
+    try {
+      setValue(value);
+      await axios.patch(`/api/documents/${initialData.id}`, { 
+        title: value || "Untitled" 
+      });
+    } catch (error) {
+      toast.error("Failed to update document title");
+    }
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -50,31 +59,36 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
     }
   };
 
-  const onIconSelect = (icon: string) => {
-    update({
-      id: initialData._id,
-      icon,
-    });
+  const onIconSelect = async (selectedIcon: string) => {
+    try {
+      await axios.patch(`/api/documents/${initialData.id}`, { icon: selectedIcon });
+      setIcon(selectedIcon);
+    } catch (error) {
+      toast.error("Failed to update document icon");
+    }
   };
 
-  const onRemoveIcon = () => {
-    removeIcon({
-      id: initialData._id,
-    });
+  const onRemoveIcon = async () => {
+    try {
+      await axios.patch(`/api/documents/${initialData.id}`, { icon: null });
+      setIcon(undefined);
+    } catch (error) {
+      toast.error("Failed to remove document icon");
+    }
   };
 
   return (
     <div className="pl-[54px] group relative">
-      {!!initialData?.icon && !preview && (
+      {!!icon && !preview && (
         <div className="flex items-center gap-x-2 group/icon pt-6">
           <IconPicker onChange={onIconSelect}>
-            <p className=" text-6xl hover:opacity-75 transition">
-              {initialData.icon}
+            <p className="text-6xl hover:opacity-75 transition">
+              {icon}
             </p>
           </IconPicker>
           <Button
             onClick={onRemoveIcon}
-            className=" rounded-full opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-sm "
+            className="rounded-full opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-sm"
             variant="outline"
             size="icon"
           >
@@ -82,18 +96,18 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
           </Button>
         </div>
       )}
-      {!!initialData?.icon && preview && (
-        <p className=" text-6xl pt-6">{initialData?.icon}</p>
+      {!!icon && preview && (
+        <p className="text-6xl pt-6">{icon}</p>
       )}
-      <div className=" opacity-0 group-hover:opacity-100 flex items-center gap-x-1 py-4">
-        {!initialData?.icon && !preview && (
+      <div className="opacity-0 group-hover:opacity-100 flex items-center gap-x-1 py-4">
+        {!icon && !preview && (
           <IconPicker onChange={onIconSelect}>
             <Button
-              className=" text-muted-foreground text-xs"
+              className="text-muted-foreground text-xs"
               variant="outline"
               size="sm"
             >
-              <Smile className=" h-4 w-4 mr-2" />
+              <Smile className="h-4 w-4 mr-2" />
               Add icon
             </Button>
           </IconPicker>
@@ -102,11 +116,11 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         {!initialData?.coverImage && !preview && (
           <Button
             onClick={coverImage.onOpen}
-            className=" text-muted-foreground text-xs"
+            className="text-muted-foreground text-xs"
             variant="outline"
             size="sm"
           >
-            <ImageIcon className=" h-4 w-4 mr-2" />
+            <ImageIcon className="h-4 w-4 mr-2" />
             Add cover
           </Button>
         )}
@@ -118,7 +132,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
           onChange={(e) => onInput(e.target.value)}
           onKeyDown={onKeyDown}
           onBlur={disableInput}
-          className=" text-5xl bg-transparent font-bold break-words outline-none text-[#3f3f3f] dark:text-[#cfcfcf]  resize-none"
+          className="text-5xl bg-transparent font-bold break-words outline-none text-[#3f3f3f] dark:text-[#cfcfcf] resize-none"
         />
       ) : (
         <div

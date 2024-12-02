@@ -8,33 +8,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import { useMutation } from "convex/react";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface MenuProps {
-  documentId: Id<"documents">;
+  documentId: string;
 }
 
 const Menu = ({ documentId }: MenuProps) => {
   const router = useRouter();
   const { user } = useUser();
 
-  const archive = useMutation(api.documents.archive);
-
-  const onArchive = () => {
-    const promise = archive({ id: documentId });
-    toast.promise(promise, {
-      loading: "Moving to trash...",
-      success: "Note to trash!",
-      error: "Failed  to trash",
-    });
-    router.push("/documents");
+  const onArchive = async () => {
+    try {
+      await axios.patch(`/api/documents/${documentId}/archive`);
+      toast.success("Note moved to trash!");
+      router.push("/documents");
+    } catch (error) {
+      toast.error("Failed to move note to trash");
+    }
   };
 
   return (

@@ -4,15 +4,15 @@ import { useScrollTop } from "@/hooks/user-scroll-top";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useConvexAuth } from "convex/react";
-import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/spinner";
 import Link from "next/link";
 
 const Navbar = () => {
   const scrolled = useScrollTop();
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isSignedIn, isLoaded } = useUser();
+
   return (
     <div
       className={cn(
@@ -21,9 +21,9 @@ const Navbar = () => {
       )}
     >
       <Logo />
-      <div className="flex items-center justify-between gap-x-2 w-full md:ml-auto md:justify-end ">
-        {isLoading && <Spinner />}
-        {!isAuthenticated && !isLoading && (
+      <div className="flex items-center justify-between gap-x-2 w-full md:ml-auto md:justify-end">
+        {!isLoaded && <Spinner />}
+        {!isSignedIn && isLoaded && (
           <>
             <SignInButton mode="modal">
               <Button variant="ghost" size="sm">
@@ -31,14 +31,14 @@ const Navbar = () => {
               </Button>
             </SignInButton>
             <SignInButton mode="modal">
-              <Button size="sm">Get Jotion free</Button>
+              <Button size="sm">Get Started</Button>
             </SignInButton>
           </>
         )}
-        {isAuthenticated && !isLoading && (
+        {isSignedIn && isLoaded && (
           <>
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/documents">Enter Jotion</Link>
+              <Link href="/documents">Enter Notion</Link>
             </Button>
             <UserButton afterSignOutUrl="/" />
           </>

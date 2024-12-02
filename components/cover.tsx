@@ -6,11 +6,10 @@ import { Button } from "./ui/button";
 import { ImageIcon, X } from "lucide-react";
 import { useCoverImage } from "@/hooks/use-cover-image";
 import { useParams } from "next/navigation";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Skeleton } from "./ui/skeleton";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface CoverProps {
   url?: string;
@@ -21,14 +20,21 @@ const Cover = ({ url, preview }: CoverProps) => {
   const { edgestore } = useEdgeStore();
   const coverImage = useCoverImage();
   const params = useParams();
-  const removeCoverImage = useMutation(api.documents.removeCoverImage);
 
   const onRemove = async () => {
-    if (url) await edgestore.publicFiles.delete({ url });
-    removeCoverImage({
-      id: params.documentId as Id<"documents">,
-    });
+    try {
+      if (url) await edgestore.publicFiles.delete({ url });
+      
+      await axios.patch(`/api/documents/${params.documentId}`, {
+        coverImage: null
+      });
+
+      toast.success("Cover image removed");
+    } catch (error) {
+      toast.error("Failed to remove cover image");
+    }
   };
+
   return (
     <div
       className={cn(
@@ -46,22 +52,22 @@ const Cover = ({ url, preview }: CoverProps) => {
         />
       )}
       {url && !preview && (
-        <div className=" opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
+        <div className="opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
           <Button
             onClick={() => coverImage.onReplace(url)}
             variant="outline"
             size="sm"
-            className=" text-muted-foreground text-xs"
+            className="text-muted-foreground text-xs"
           >
-            <ImageIcon className=" h-4 w-4 mr-2" /> Change cover
+            <ImageIcon className="h-4 w-4 mr-2" /> Change cover
           </Button>
           <Button
             onClick={onRemove}
             variant="outline"
             size="sm"
-            className=" text-muted-foreground text-xs"
+            className="text-muted-foreground text-xs"
           >
-            <X className=" h-4 w-4 mr-2" /> Remove
+            <X className="h-4 w-4 mr-2" /> Remove
           </Button>
         </div>
       )}
@@ -72,4 +78,5 @@ const Cover = ({ url, preview }: CoverProps) => {
 Cover.Skeleton = function CoverSkeleton() {
   return <Skeleton className="w-full h-[12vh]" />;
 };
+
 export default Cover;
