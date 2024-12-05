@@ -8,7 +8,6 @@ import {
   MoreHorizontal,
   Trash
 } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
@@ -50,10 +49,11 @@ export const Item = ({
 }: ItemProps) => {
   const { user } = useUser();
   const router = useRouter();
-  const { remove, restore, archive } = useDocuments((store) => ({
+  const { remove, restore, archive, create } = useDocuments((store) => ({
     remove: store.remove,
     restore: store.restore,
-    archive: store.archive
+    archive: store.archive,
+    create: store.create
   }));
 
   const handleExpand = (
@@ -70,12 +70,18 @@ export const Item = ({
     if (!id) return;
     
     const promise = archive(id);
-
+    
     toast.promise(promise, {
       loading: "Moving to trash...",
       success: "Note moved to trash!",
       error: "Failed to archive note."
     });
+  };
+
+  const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    if (!id) return;
+    const promise = create({ title: "Untitled", parentDocument: id });
   };
 
   const onRestore = (
@@ -92,6 +98,7 @@ export const Item = ({
       error: "Failed to restore note."
     });
   };
+
 
   const onRemove = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -182,7 +189,7 @@ export const Item = ({
           </DropdownMenu>
           <div
             role="button"
-            onClick={(e) => e.stopPropagation()}
+            onClick={onCreate}
             className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
           >
             <Plus className="h-4 w-4 text-muted-foreground" />

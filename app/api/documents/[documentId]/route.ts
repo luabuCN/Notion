@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { useAuth} from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 interface IParams {
@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: IParams }
 ) {
   try {
-    const { userId } = useAuth();
+    const { userId } = await auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -36,7 +36,7 @@ export async function PATCH(
   { params }: { params: IParams }
 ) {
   try {
-    const { userId } = useAuth();
+    const { userId } = await auth();
     const body = await req.json();
 
     const { title, content, coverImage, icon, isPublished } = body;
@@ -71,7 +71,7 @@ export async function DELETE(
   { params }: { params: IParams }
 ) {
   try {
-    const { userId } = useAuth();
+    const { userId } = await auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });

@@ -3,19 +3,19 @@
 import { Document } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Item from "./item";
+import {Item} from "./item";
 import { cn } from "@/lib/utils";
 import { FileIcon } from "lucide-react";
-import { useDocuments, fetchDocuments } from "@/hooks/use-documents";
+import { useDocuments} from "@/hooks/use-documents";
 
 interface DocumentsListProps {
-  parentDocument?: string;
+  parentDocument?: string | null;
   level?: number;
   data?: Document[];
 }
 
 const DocumentsList = ({
-  parentDocument,
+  parentDocument = null,
   level = 0,
   data,
 }: DocumentsListProps) => {
@@ -23,11 +23,13 @@ const DocumentsList = ({
   const router = useRouter();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
-  const { documents } = useDocuments();
-
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const {  getDocuments } = useDocuments();
+  
   useEffect(() => {
     const loadDocuments = async () => {
-      await fetchDocuments();
+      const documents = await getDocuments() as Document[];
+      setDocuments(documents);
       setLoading(false);
     };
     loadDocuments();

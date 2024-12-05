@@ -190,6 +190,7 @@ export const useDocuments = create<DocumentStore>((set, get) => ({
       const response = await fetch("/api/documents");
       if (!response.ok) throw new Error("Failed to fetch documents");
       const documents = await response.json();
+      
       set({ documents, isLoading: false });
       return documents;
     } catch (error) {

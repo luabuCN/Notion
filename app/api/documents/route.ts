@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { useAuth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
     
-    console.log(useAuth(),'useAuth()-----------------------------------------');
-    
-    const { userId } = useAuth();
+    const { userId } = await auth();
     
     const body = await req.json();
     const { title, parentDocument } = body;
@@ -39,7 +37,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    const { userId } = useAuth();
+    const { userId } = await auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });

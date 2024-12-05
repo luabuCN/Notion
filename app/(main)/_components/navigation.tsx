@@ -18,7 +18,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useDocuments } from "@/hooks/use-documents";
 import { Item } from "./item";
 import { toast } from "sonner";
-import { DocumentList } from "./document-list";
+import  DocumentList  from "./documents-list"
 import {
   Popover,
   PopoverTrigger,

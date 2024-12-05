@@ -16,13 +16,13 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
   const [document, setDocument] = useState<any>(undefined);
   const [loading, setLoading] = useState(true);
 
-  const Editor = useMemo(
-    () =>
-      dynamic(() => import("@/components/editor"), {
-        ssr: false,
-      }),
-    []
-  );
+  // const Editor = useMemo(
+  //   () =>
+  //     dynamic(() => import("@/components/editor"), {
+  //       ssr: false,
+  //     }),
+  //   []
+  // );
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -75,7 +75,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
       </div>
       <div className="mx-auto md:max-w-3xl lg:max-w-4xl">
         <Toolbar initialData={document} />
-        <Editor onChange={handleChange} initialContent={document?.content} />
+        {/* <Editor onChange={handleChange} initialContent={document?.content} /> */}
       </div>
     </div>
   );

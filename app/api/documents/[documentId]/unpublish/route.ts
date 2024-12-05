@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { useAuth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
 interface IParams {
@@ -11,7 +11,7 @@ export async function PATCH(
   { params }: { params: IParams }
 ) {
   try {
-    const { userId } = useAuth();
+    const { userId } = await auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
