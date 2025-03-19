@@ -11,7 +11,13 @@ import {
   Trash,
 } from "lucide-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ElementRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ElementRef,
+  useCallback,
+} from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./user-item";
 import { useQuery, useMutation } from "convex/react";
@@ -82,7 +88,7 @@ const Navigation = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
-  const resetWidth = () => {
+  const resetWidth = useCallback(() => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
       setIsResetting(true);
@@ -97,7 +103,7 @@ const Navigation = () => {
         setIsResetting(false);
       }, 300);
     }
-  };
+  }, [isMobile]);
 
   const collapse = () => {
     if (sidebarRef.current && navbarRef.current) {
