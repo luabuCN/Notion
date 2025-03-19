@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Document {
+  id             String   @id @default(cuid()) 
+  title          String
+  userId         String
+  isArchived     Boolean
+  parentDocumentId String?  
+  parentDocument   Document? @relation("ParentChild", fields: [parentDocumentId], references: [id]) // 父级文档
+  children         Document[] @relation("ParentChild") // 子级文档
+
+  content        String?
+  coverImage     String?
+  icon           String?
+  isPublished    Boolean
+
+  // 建立索引
+  @@index([userId])
+  @@index([userId, parentDocumentId])
+}
