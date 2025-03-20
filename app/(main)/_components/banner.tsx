@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface BannerProps {
-  documentId: Id<"documents">;
+  documentId: string;
 }
 
 const Banner = ({ documentId }: BannerProps) => {

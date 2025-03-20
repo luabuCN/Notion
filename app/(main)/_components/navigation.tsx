@@ -20,8 +20,6 @@ import {
 } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./user-item";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import Item from "./item";
 import { toast } from "sonner";
 import DocumentsList from "./documents-list";
@@ -35,6 +33,8 @@ import { uesSearch } from "@/hooks/user-search";
 import { useSetting } from "@/hooks/use-setting";
 import Navbar from "./navbar";
 import { Button } from "@/components/ui/button";
+import { useCreateDocument } from "../useQuery";
+import { useQueryClient } from "@tanstack/react-query";
 const Navigation = () => {
   const settings = useSetting();
   const router = useRouter();
@@ -45,10 +45,10 @@ const Navigation = () => {
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
-  const create = useMutation(api.documents.create);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
-
+  const queryClient = useQueryClient();
+  const { mutate } = useCreateDocument();
   useEffect(() => {
     if (isMobile) {
       collapse();
@@ -71,7 +71,6 @@ const Navigation = () => {
     let newWidth = event.clientX;
     if (newWidth < 150) newWidth = 150;
     if (newWidth > 480) newWidth = 480;
-    console.log(newWidth, "1111");
 
     if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
@@ -121,14 +120,15 @@ const Navigation = () => {
   };
 
   const handleCreate = () => {
-    const promise = create({
-      title: "Untitled",
-    }).then((documentId) => router.push(`/documents/${documentId}`));
-
-    toast.promise(promise, {
-      loading: "正在创建新笔记...",
-      success: "新笔记已创建！",
-      error: "创建新笔记失败",
+    mutate("未命名", {
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ["sidebarDocuments"] });
+        router.push(`/documents/${res.id}`);
+        toast.success("新笔记已创建！");
+      },
+      onError: () => {
+        toast.error("创建新笔记失败");
+      },
     });
   };
 

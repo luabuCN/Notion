@@ -25,8 +25,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface ItemProps {
-  id?: Id<"documents">;
-  documentIcon?: string;
+  id?: string;
+  documentIcon?: string | null;
   active?: boolean;
   expanded?: boolean;
   isSearch?: boolean;

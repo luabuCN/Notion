@@ -13,7 +13,7 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { Skeleton } from "./ui/skeleton";
 
 interface CoverProps {
-  url?: string;
+  url?: string | null | undefined;
   preview?: boolean;
 }
 
@@ -30,21 +30,8 @@ const Cover = ({ url, preview }: CoverProps) => {
     });
   };
   return (
-    <div
-      className={cn(
-        "relative w-full h-[35vh] group",
-        !url && "h-[12vh]",
-        url && "bg-muted"
-      )}
-    >
-      {!!url && (
-        <Image
-          src={url}
-          fill
-          alt="封面"
-          className="object-cover w-full h-full"
-        />
-      )}
+    <div className={cn("relative w-full h-[35vh] group", !url && "h-[12vh]", url && "bg-muted")}>
+      {!!url && <Image src={url} fill alt="封面" className="object-cover w-full h-full" />}
       {url && !preview && (
         <div className=" opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
           <Button
@@ -55,12 +42,7 @@ const Cover = ({ url, preview }: CoverProps) => {
           >
             <ImageIcon className=" h-4 w-4 mr-2" /> 更改封面
           </Button>
-          <Button
-            onClick={onRemove}
-            variant="outline"
-            size="sm"
-            className=" text-muted-foreground text-xs"
-          >
+          <Button onClick={onRemove} variant="outline" size="sm" className=" text-muted-foreground text-xs">
             <X className=" h-4 w-4 mr-2" /> 移除
           </Button>
         </div>

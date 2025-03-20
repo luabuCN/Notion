@@ -7,32 +7,43 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getDocumentById } from "@/app/actions/document";
+import { Document } from "@prisma/client";
 
 interface DocumentIdPageProps {
-  params: { documentId: Id<"documents"> };
+  params: { documentId: string };
 }
 
 const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
-  const Editor = useMemo(
-    () =>
-      dynamic(() => import("@/components/editor"), {
-        ssr: false,
-      }),
-    []
-  );
-  const document = useQuery(api.documents.getById, {
-    documentId: params.documentId,
-  });
+  // const Editor = useMemo(
+  //   () =>
+  //     dynamic(() => import("@/components/editor"), {
+  //       ssr: false,
+  //     }),
+  //   []
+  // );
+  const [document, setDocuments] = useState<Document>();
+  // const document = useQuery(api.documents.getById, {
+  //   documentId: params.documentId,
+  // });
 
-  const update = useMutation(api.documents.update);
+  // const update = useMutation(api.documents.update);
 
-  const handleChange = (content: string) => {
-    update({
-      id: params.documentId,
-      content,
-    });
-  };
+  useEffect(() => {
+    const fetchDocument = async () => {
+      const res = await getDocumentById(params.documentId);
+      res && setDocuments(res);
+    };
+    fetchDocument();
+  }, [params.documentId]);
+
+  // const handleChange = (content: string) => {
+  //   update({
+  //     id: params.documentId,
+  //     content,
+  //   });
+  // };
   if (document === undefined) {
     <div>
       <Cover.Skeleton />
@@ -57,7 +68,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
       </div>
       <div className="mx-auto md:max-w-3xl lg:max-w-4xl">
         <Toolbar initialData={document!} />
-        <Editor onChange={handleChange} initialContent={document?.content} />
+        {/* <Editor onChange={handleChange} initialContent={document?.content} /> */}
       </div>
     </div>
   );

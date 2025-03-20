@@ -9,9 +9,9 @@ import { useMutation } from "convex/react";
 import { ImageIcon, Smile, X } from "lucide-react";
 import { useRef, useState, type ElementRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-
+import { Document } from "@prisma/client";
 interface ToolbarProps {
-  initialData: Doc<"documents">;
+  initialData: Document;
   preview?: boolean;
 }
 const Toolbar = ({ initialData, preview }: ToolbarProps) => {
@@ -68,9 +68,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
       {!!initialData?.icon && !preview && (
         <div className="flex items-center gap-x-2 group/icon pt-6">
           <IconPicker onChange={onIconSelect}>
-            <p className=" text-6xl hover:opacity-75 transition">
-              {initialData.icon}
-            </p>
+            <p className=" text-6xl hover:opacity-75 transition">{initialData.icon}</p>
           </IconPicker>
           <Button
             onClick={onRemoveIcon}
@@ -82,17 +80,11 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
           </Button>
         </div>
       )}
-      {!!initialData?.icon && preview && (
-        <p className=" text-6xl pt-6">{initialData?.icon}</p>
-      )}
+      {!!initialData?.icon && preview && <p className=" text-6xl pt-6">{initialData?.icon}</p>}
       <div className=" opacity-0 group-hover:opacity-100 flex items-center gap-x-1 py-4">
         {!initialData?.icon && !preview && (
           <IconPicker onChange={onIconSelect}>
-            <Button
-              className=" text-muted-foreground text-xs"
-              variant="outline"
-              size="sm"
-            >
+            <Button className=" text-muted-foreground text-xs" variant="outline" size="sm">
               <Smile className=" h-4 w-4 mr-2" />
               添加图标
             </Button>
@@ -100,12 +92,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         )}
 
         {!initialData?.coverImage && !preview && (
-          <Button
-            onClick={coverImage.onOpen}
-            className=" text-muted-foreground text-xs"
-            variant="outline"
-            size="sm"
-          >
+          <Button onClick={coverImage.onOpen} className=" text-muted-foreground text-xs" variant="outline" size="sm">
             <ImageIcon className=" h-4 w-4 mr-2" />
             添加封面
           </Button>

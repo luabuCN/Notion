@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface MenuProps {
-  documentId: Id<"documents">;
+  documentId: string;
 }
 
 const Menu = ({ documentId }: MenuProps) => {

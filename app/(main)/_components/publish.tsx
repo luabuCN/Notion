@@ -13,9 +13,9 @@ import { useMutation } from "convex/react";
 import { Check, Copy, Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-
+import { Document } from "@prisma/client";
 interface PublishProps {
-  initialData: Doc<"documents">;
+  initialData: Document;
 }
 
 const Publish = ({ initialData }: PublishProps) => {

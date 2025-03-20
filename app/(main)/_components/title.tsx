@@ -7,9 +7,9 @@ import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useRef, useState } from "react";
-
+import { Document } from "@prisma/client";
 interface TitleProps {
-  initialData: Doc<"documents">;
+  initialData: Document;
 }
 
 const Title = ({ initialData }: TitleProps) => {

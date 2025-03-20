@@ -1,18 +1,16 @@
 "use client";
 
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Item from "./item";
 import { cn } from "@/lib/utils";
 import { FileIcon } from "lucide-react";
-
+import { Document } from "@prisma/client";
+import { useSidebarDocuments } from "../useQuery";
 interface DocumentsListProps {
-  parentDocuments?: Id<"documents">;
+  parentDocuments?: string;
   level?: number;
-  data?: Doc<"documents">[];
+  data?: Document[];
 }
 const DocumentsList = ({
   parentDocuments,
@@ -29,16 +27,15 @@ const DocumentsList = ({
       [documentId]: !prev[documentId],
     }));
   };
-
-  const documents = useQuery(api.documents.getSidebar, {
-    parentDocument: parentDocuments,
-  });
-
+  const { data: documents, isLoading } = useSidebarDocuments(parentDocuments);
+  useEffect(() => {
+    console.log(documents, "documents");
+  }, [documents]);
   const onRedirect = (documentId: string) => {
     router.push(`/documents/${documentId}`);
   };
 
-  if (documents === undefined) {
+  if (isLoading) {
     return (
       <>
         <Item.Skeleton level={level} />
@@ -66,20 +63,20 @@ const DocumentsList = ({
         没有文档
       </p>
       {documents?.map((document) => (
-        <div key={document._id}>
+        <div key={document.id}>
           <Item
-            id={document._id}
-            onClick={() => onRedirect(document._id)}
+            id={document.id}
+            onClick={() => onRedirect(document.id)}
             label={document.title}
             icon={FileIcon}
-            active={params.documentId === document._id}
+            active={params.documentId === document.id}
             level={level}
-            onExpand={() => onExpand(document._id)}
-            expanded={expanded[document._id]}
+            onExpand={() => onExpand(document.id)}
+            expanded={expanded[document.id]}
             documentIcon={document.icon}
           />
-          {expanded[document._id] && (
-            <DocumentsList parentDocuments={document._id} level={level + 1} />
+          {expanded[document.id] && (
+            <DocumentsList parentDocuments={document.id} level={level + 1} />
           )}
         </div>
       ))}

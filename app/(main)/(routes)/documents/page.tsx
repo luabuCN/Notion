@@ -4,23 +4,25 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/clerk-react";
 import { PlusCircle } from "lucide-react";
 import Image from "next/image";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCreateDocument } from "../../useQuery";
+import { useQueryClient } from "@tanstack/react-query";
 const Documents = () => {
   const { user } = useUser();
-  const create = useMutation(api.documents.create);
   const router = useRouter();
+  const { mutate } = useCreateDocument();
+  const queryClient = useQueryClient();
   const onCreate = () => {
-    const promise = create({
-      title: "未命名",
-    }).then((documentId) => router.push(`/documents/${documentId}`));
-
-    toast.promise(promise, {
-      loading: "正在创建新笔记...",
-      success: "新笔记已创建！",
-      error: "创建新笔记失败",
+    mutate("未命名", {
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ["sidebarDocuments"] });
+        router.push(`/documents/${res.id}`);
+        toast.success("新笔记已创建！");
+      },
+      onError: () => {
+        toast.error("创建新笔记失败");
+      },
     });
   };
 
