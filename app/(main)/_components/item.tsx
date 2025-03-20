@@ -8,11 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-react";
-import { useMutation } from "convex/react";
 import {
   ChevronDown,
   ChevronRight,
@@ -23,7 +20,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useCreateDocument } from "../useQuery";
+import { useCreateDocument, useArchive } from "../useDocumentQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ItemProps {
@@ -52,17 +49,22 @@ const Item = ({
 }: ItemProps) => {
   const { user } = useUser();
   const router = useRouter();
-  const create = useMutation(api.documents.create);
-  const archive = useMutation(api.documents.archive);
   const { mutate } = useCreateDocument();
   const queryClient = useQueryClient();
+  const { mutate: mutateArchive } = useArchive();
   const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!id) return;
-    const promise = archive({ id });
-    toast.promise(promise, {
-      loading: "移动到回收站...",
-      success: "笔记已移至回收站！",
-      error: "移动到回收站失败",
+    mutateArchive(id, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ["sidebarDocuments"],
+        });
+        toast.success("笔记已移至回收站！");
+        router.push("/documents");
+      },
+      onError: () => {
+        toast.error("移动到回收站失败");
+      },
     });
   };
   const handleExpand = (

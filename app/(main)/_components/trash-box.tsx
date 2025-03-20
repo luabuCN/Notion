@@ -2,23 +2,21 @@
 import ConfirmModal from "@/components/modals/confirm-modal";
 import { Spinner } from "@/components/spinner";
 import { Input } from "@/components/ui/input";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { Search, Trash, Undo } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRemove, useRestore, useTrashDocuments } from "../useDocumentQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const TrashBox = () => {
   const router = useRouter();
   const params = useParams();
-  const documents = useQuery(api.documents.getTrash);
-  const restore = useMutation(api.documents.restore);
-  const remove = useMutation(api.documents.remove);
-
+  const { mutate: mutateRestore } = useRestore();
+  const { mutate: mutateRemove } = useRemove();
   const [search, setSearch] = useState("");
-
+  const queryClient = useQueryClient();
+  const { data: documents, isLoading, refetch } = useTrashDocuments();
   const filteredDocuments = documents?.filter((doc) =>
     doc.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -29,22 +27,27 @@ const TrashBox = () => {
 
   const onRestore = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    documentId: Id<"documents">
+    documentId: string
   ) => {
     event.stopPropagation();
-    const promise = restore({ id: documentId });
-
-    toast.promise(promise, {
-      loading: "正在恢复笔记...",
-      success: "笔记已恢复！",
-      error: "恢复笔记失败。",
+    mutateRestore(documentId, {
+      onSuccess: async () => {
+        toast.success("笔记已恢复！");
+        await queryClient.invalidateQueries({
+          queryKey: ["sidebarDocuments"],
+        });
+        refetch();
+      },
+      onError: () => {
+        toast.error("恢复笔记失败。");
+      },
     });
 
     if (params.documentId === documentId) {
       router.push("/documents");
     }
 
-    if (document === undefined) {
+    if (isLoading) {
       return (
         <div className="h-full flex items-center justify-center p-4">
           <Spinner size="lg" />
@@ -53,6 +56,17 @@ const TrashBox = () => {
     }
   };
 
+  const onRemove = (documentId: string) => {
+    mutateRemove(documentId, {
+      onSuccess: () => {
+        toast.success("笔记已删除！");
+        refetch();
+      },
+      onError: () => {
+        toast.error("删除笔记失败。");
+      },
+    });
+  };
   return (
     <div className="text-sm">
       <div className=" flex items-center gap-x-1 p-2">
@@ -70,21 +84,21 @@ const TrashBox = () => {
         </p>
         {filteredDocuments?.map((document) => (
           <div
-            key={document._id}
+            key={document.id}
             role="button"
-            onClick={() => onClick(document._id)}
+            onClick={() => onClick(document.id)}
             className=" text-sm rounded-sm w-full py-1 hover:bg-primary/5 flex items-center text-primary justify-between"
           >
             <span className=" truncate pl-2">{document.title}</span>
             <div className=" flex items-center">
               <div
-                onClick={(e) => onRestore(e, document._id)}
+                onClick={(e) => onRestore(e, document.id)}
                 role="button"
                 className=" rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600"
               >
                 <Undo className="h-4 w-4 text-muted-foreground" />
               </div>
-              <ConfirmModal onConfirm={() => remove({ id: document._id })}>
+              <ConfirmModal onConfirm={() => onRemove(document.id)}>
                 <div className=" rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600">
                   <Trash className="h-4 w-4 text-muted-foreground" />
                 </div>

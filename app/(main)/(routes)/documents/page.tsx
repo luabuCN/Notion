@@ -6,7 +6,7 @@ import { PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useCreateDocument } from "../../useQuery";
+import { useCreateDocument } from "../../useDocumentQuery";
 import { useQueryClient } from "@tanstack/react-query";
 const Documents = () => {
   const { user } = useUser();

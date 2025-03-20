@@ -33,7 +33,7 @@ import { uesSearch } from "@/hooks/user-search";
 import { useSetting } from "@/hooks/use-setting";
 import Navbar from "./navbar";
 import { Button } from "@/components/ui/button";
-import { useCreateDocument } from "../useQuery";
+import { useCreateDocument } from "../useDocumentQuery";
 import { useQueryClient } from "@tanstack/react-query";
 const Navigation = () => {
   const settings = useSetting();

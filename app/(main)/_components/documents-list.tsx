@@ -1,12 +1,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Item from "./item";
 import { cn } from "@/lib/utils";
 import { FileIcon } from "lucide-react";
 import { Document } from "@prisma/client";
-import { useSidebarDocuments } from "../useQuery";
+import { useSidebarDocuments } from "../useDocumentQuery";
 interface DocumentsListProps {
   parentDocuments?: string;
   level?: number;
@@ -28,9 +28,7 @@ const DocumentsList = ({
     }));
   };
   const { data: documents, isLoading } = useSidebarDocuments(parentDocuments);
-  useEffect(() => {
-    console.log(documents, "documents");
-  }, [documents]);
+
   const onRedirect = (documentId: string) => {
     router.push(`/documents/${documentId}`);
   };
