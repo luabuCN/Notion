@@ -8,10 +8,10 @@ const Footer = () => {
       <Logo />
       <div className="flex items-center justify-between md:justify-end gap-x-2 w-full md:ml-auto text-muted-foreground">
         <Button variant="ghost" asChild>
-          <Link href="">Privacy Policy</Link>
+          <Link href="">隐私政策</Link>
         </Button>
         <Button variant="ghost" asChild>
-          <Link href="">Terms & Conditions</Link>
+          <Link href="">条款与条件</Link>
         </Button>
       </div>
     </footer>

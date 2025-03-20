@@ -14,13 +14,13 @@ const Documents = () => {
   const router = useRouter();
   const onCreate = () => {
     const promise = create({
-      title: "Untitled",
+      title: "未命名",
     }).then((documentId) => router.push(`/documents/${documentId}`));
 
     toast.promise(promise, {
-      loading: "Creating a new note...",
-      success: "New note created!",
-      error: "Failed to create a new note",
+      loading: "正在创建新笔记...",
+      success: "新笔记已创建！",
+      error: "创建新笔记失败",
     });
   };
 
@@ -30,22 +30,22 @@ const Documents = () => {
         src="/empty.png"
         width={300}
         height={300}
-        alt="empty"
+        alt="空的"
         className="dark:hidden"
       />
       <Image
         src="/empty-dark.png"
         width={300}
         height={300}
-        alt="empty"
+        alt="空的"
         className="hidden dark:block"
       />
       <h2 className=" text-lg font-medium">
-        Welcome to {user?.fullName} &apos; s Jotion
+        欢迎来到 {user?.fullName} 的 Jotion
       </h2>
       <Button onClick={onCreate}>
         <PlusCircle className="w-4 h-4 mr-2" />
-        Create a note
+        创建笔记
       </Button>
     </div>
   );

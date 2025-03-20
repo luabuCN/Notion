@@ -126,9 +126,9 @@ const Navigation = () => {
     }).then((documentId) => router.push(`/documents/${documentId}`));
 
     toast.promise(promise, {
-      loading: "Creating a new note...",
-      success: "New note created!",
-      error: "Failed to create a new note",
+      loading: "正在创建新笔记...",
+      success: "新笔记已创建！",
+      error: "创建新笔记失败",
     });
   };
 
@@ -157,16 +157,16 @@ const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item label="Search" icon={Search} isSearch onClick={search.onOpen} />
-          <Item label="Setting" icon={Settings} onClick={settings.onOpen} />
-          <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
+          <Item label="搜索" icon={Search} isSearch onClick={search.onOpen} />
+          <Item label="设置" icon={Settings} onClick={settings.onOpen} />
+          <Item onClick={handleCreate} label="新页面" icon={PlusCircle} />
         </div>
         <div className="mt-4">
           <DocumentsList />
-          <Item onClick={handleCreate} icon={Plus} label="New Page" />
+          <Item onClick={handleCreate} icon={Plus} label="新页面" />
           <Popover>
             <PopoverTrigger className="w-full mt-4">
-              <Item label="Trash" icon={Trash} />
+              <Item label="垃圾箱" icon={Trash} />
             </PopoverTrigger>
             <PopoverContent
               className="p-0 w-72"

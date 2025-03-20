@@ -41,7 +41,7 @@ const Cover = ({ url, preview }: CoverProps) => {
         <Image
           src={url}
           fill
-          alt="cover"
+          alt="封面"
           className="object-cover w-full h-full"
         />
       )}
@@ -53,7 +53,7 @@ const Cover = ({ url, preview }: CoverProps) => {
             size="sm"
             className=" text-muted-foreground text-xs"
           >
-            <ImageIcon className=" h-4 w-4 mr-2" /> Change cover
+            <ImageIcon className=" h-4 w-4 mr-2" /> 更改封面
           </Button>
           <Button
             onClick={onRemove}
@@ -61,7 +61,7 @@ const Cover = ({ url, preview }: CoverProps) => {
             size="sm"
             className=" text-muted-foreground text-xs"
           >
-            <X className=" h-4 w-4 mr-2" /> Remove
+            <X className=" h-4 w-4 mr-2" /> 移除
           </Button>
         </div>
       )}

@@ -40,7 +40,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
     setValue(value);
     update({
       id: initialData._id,
-      title: value || "Untitled",
+      title: value || "未命名",
     });
   };
 
@@ -94,7 +94,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
               size="sm"
             >
               <Smile className=" h-4 w-4 mr-2" />
-              Add icon
+              添加图标
             </Button>
           </IconPicker>
         )}
@@ -107,7 +107,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
             size="sm"
           >
             <ImageIcon className=" h-4 w-4 mr-2" />
-            Add cover
+            添加封面
           </Button>
         )}
       </div>

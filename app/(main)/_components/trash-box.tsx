@@ -35,9 +35,9 @@ const TrashBox = () => {
     const promise = restore({ id: documentId });
 
     toast.promise(promise, {
-      loading: "Restoring note...",
-      success: "Note restored!",
-      error: "Failed to restore note.",
+      loading: "正在恢复笔记...",
+      success: "笔记已恢复！",
+      error: "恢复笔记失败。",
     });
 
     if (params.documentId === documentId) {
@@ -61,12 +61,12 @@ const TrashBox = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className=" h-7 px-2 focus-visible:ring-transparent bg-secondary"
-          placeholder="Search by title"
+          placeholder="按标题搜索"
         />
       </div>
       <div className="mt-2 px-1 pb-1">
         <p className=" hidden last:block text-xs text-center text-muted-foreground">
-          No notes found.
+          未找到笔记。
         </p>
         {filteredDocuments?.map((document) => (
           <div

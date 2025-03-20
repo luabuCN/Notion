@@ -56,9 +56,9 @@ const Item = ({
     if (!id) return;
     const promise = archive({ id });
     toast.promise(promise, {
-      loading: "Moving to trash...",
-      success: "Note to trash!",
-      error: "Failed  to trash",
+      loading: "移动到回收站...",
+      success: "笔记已移至回收站！",
+      error: "移动到回收站失败",
     });
   };
   const handleExpand = (
@@ -71,16 +71,16 @@ const Item = ({
   const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     if (!id) return;
-    const promise = create({ title: "Untitled", parentDocument: id }).then(
+    const promise = create({ title: "无标题", parentDocument: id }).then(
       (documentId) => {
         if (!expanded) {
           onExpand?.();
         }
         router.push(`/documents/${documentId}`);
         toast.promise(promise, {
-          loading: "Creating a new note...",
-          success: "New note created!",
-          error: "Failed to create a new note",
+          loading: "正在创建新笔记...",
+          success: "新笔记已创建！",
+          error: "创建新笔记失败",
         });
       }
     );
@@ -142,11 +142,11 @@ const Item = ({
             >
               <DropdownMenuItem onClick={onArchive}>
                 <Trash className="h-4 w-4 mr-2" />
-                Delete
+                删除
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className=" text-xs text-muted-foreground p-2">
-                Last edited by {user?.fullName}
+                最后编辑者 {user?.fullName}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

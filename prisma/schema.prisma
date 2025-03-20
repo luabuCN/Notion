@@ -26,6 +26,9 @@ model Document {
   coverImage     String?
   icon           String?
   isPublished    Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
 
   // 建立索引
   @@index([userId])

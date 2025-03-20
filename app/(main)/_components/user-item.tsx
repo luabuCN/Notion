@@ -23,7 +23,7 @@ const UserItem = () => {
               <AvatarImage src={user?.imageUrl} />
             </Avatar>
             <span className="text-start font-medium  line-clamp-1">
-              {user?.fullName}&apos;s Jotion
+              {user?.fullName}的 Jotion
             </span>
           </div>
           <ChevronsLeftRight className="ml-2 h-4 w-4 rotate-90 text-muted-foreground" />
@@ -46,15 +46,13 @@ const UserItem = () => {
               </Avatar>
             </div>
             <div className="space-y-1">
-              <p className="text-sm line-clamp-1">
-                {user?.fullName}&apos;s Jotion
-              </p>
+              <p className="text-sm line-clamp-1">{user?.fullName}的 Jotion</p>
             </div>
           </div>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem className=" w-full cursor-pointer text-muted-foreground">
-          <SignOutButton>Log out</SignOutButton>
+          <SignOutButton>登出</SignOutButton>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

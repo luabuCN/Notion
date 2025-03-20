@@ -12,13 +12,13 @@ const SettingModal = () => {
     <Dialog open={settings.isOpen} onOpenChange={settings.onClose}>
       <DialogContent>
         <DialogHeader>
-          <h2 className=" text-lg font-medium">My settings</h2>
+          <h2 className=" text-lg font-medium">我的设置</h2>
         </DialogHeader>
         <div className=" flex items-center justify-between">
           <div className=" flex flex-col gap-y-1">
-            <Label>Appearance</Label>
+            <Label>外观</Label>
             <span className=" text-[0.8rem] text-muted-foreground">
-              Customize how Jotion looks on your device
+              自定义 Jotion 在您的设备上的外观
             </span>
           </div>
           <ModeToggle />

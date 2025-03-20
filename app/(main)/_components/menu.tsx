@@ -30,9 +30,9 @@ const Menu = ({ documentId }: MenuProps) => {
   const onArchive = () => {
     const promise = archive({ id: documentId });
     toast.promise(promise, {
-      loading: "Moving to trash...",
-      success: "Note to trash!",
-      error: "Failed  to trash",
+      loading: "移动到回收站...",
+      success: "笔记已移至回收站！",
+      error: "移动到回收站失败",
     });
     router.push("/documents");
   };
@@ -52,11 +52,11 @@ const Menu = ({ documentId }: MenuProps) => {
       >
         <DropdownMenuItem onSelect={onArchive}>
           <Trash className="w-4 h-4 mr-2" />
-          Delete
+          删除
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <div className="text-xs text-muted-foreground p-2">
-          Last edited by {user?.fullName}
+          最后编辑者 {user?.fullName}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

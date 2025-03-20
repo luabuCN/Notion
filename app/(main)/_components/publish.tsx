@@ -33,9 +33,9 @@ const Publish = ({ initialData }: PublishProps) => {
       isPublished: true,
     }).finally(() => setIsSubmitting(false));
     toast.promise(promise, {
-      loading: "Publishing...",
-      success: "Document published",
-      error: "Failed to publish document",
+      loading: "发布中...",
+      success: "文档已发布",
+      error: "发布文档失败",
     });
   };
 
@@ -48,9 +48,9 @@ const Publish = ({ initialData }: PublishProps) => {
     }).finally(() => setIsSubmitting(false));
 
     toast.promise(promise, {
-      loading: "UnPublishing...",
-      success: "Note unpublished!",
-      error: "Failed to unpublish note.",
+      loading: "取消发布中...",
+      success: "笔记已取消发布！",
+      error: "取消发布笔记失败。",
     });
   };
 
@@ -63,7 +63,7 @@ const Publish = ({ initialData }: PublishProps) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button size="sm" variant="ghost">
-          Publish
+          发布
           {initialData.isPublished && (
             <Globe className=" text-sky-500 w-4 h-4 ml-2" />
           )}
@@ -75,7 +75,7 @@ const Publish = ({ initialData }: PublishProps) => {
             <p className="flex items-center gap-x-2">
               <Globe className="h-4 w-4 animate-pulse text-sky-500" />
               <span className="text-xs font-medium text-sky-500">
-                This note is living on web
+                该笔记已在网上发布
               </span>
             </p>
             <div className="flex items-center">
@@ -102,15 +102,15 @@ const Publish = ({ initialData }: PublishProps) => {
               size="sm"
               onClick={handleUnpublish}
             >
-              UnPublish
+              取消发布
             </Button>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center">
             <Globe className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className=" text-sm font-medium mb-2">Publish this note</p>
+            <p className=" text-sm font-medium mb-2">发布此笔记</p>
             <span className=" text-xs  text-muted-foreground mb-4">
-              Share your note with a unique link.
+              通过唯一链接分享您的笔记。
             </span>
             <Button
               disabled={isSubmitting}
@@ -118,7 +118,7 @@ const Publish = ({ initialData }: PublishProps) => {
               className="w-full text-xs"
               size="sm"
             >
-              Publish
+              发布
             </Button>
           </div>
         )}

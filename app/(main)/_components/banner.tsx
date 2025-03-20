@@ -21,11 +21,11 @@ const Banner = ({ documentId }: BannerProps) => {
     const promise = remove({ id: documentId });
 
     toast.promise(promise, {
-      loading: "Deleting note...",
+      loading: "正在删除笔记...",
 
-      success: "Note deleted successfully",
+      success: "笔记删除成功",
 
-      error: "Failed to delete note",
+      error: "删除笔记失败",
     });
     router.push("/documents");
   };
@@ -34,24 +34,24 @@ const Banner = ({ documentId }: BannerProps) => {
     const promise = restore({ id: documentId });
 
     toast.promise(promise, {
-      loading: "Restoring note...",
+      loading: "正在恢复笔记...",
 
-      success: "Note restored successfully",
+      success: "笔记恢复成功",
 
-      error: "Failed to restore note",
+      error: "恢复笔记失败",
     });
   };
 
   return (
     <div className="w-full bg-rose-500 text-center text-white text-sm p-2 flex items-center gap-x-2 justify-center">
-      <p> This page is in Trash</p>
+      <p> 此页面在回收站中</p>
       <Button
         size="sm"
         onClick={onRestore}
         variant="outline"
         className=" border-white bg-transparent hover:bg-primary/5 text-white hover:text-muted-foreground p-1 px-2 h-auto font-normal"
       >
-        Restore Page
+        恢复页面
       </Button>
       <ConfirmModal onConfirm={onRemove}>
         <Button
@@ -59,7 +59,7 @@ const Banner = ({ documentId }: BannerProps) => {
           variant="outline"
           className=" border-white bg-transparent hover:bg-primary/5 text-white hover:text-muted-foreground  p-1 px-2 h-auto font-normal"
         >
-          Remove Page
+          删除页面
         </Button>
       </ConfirmModal>
     </div>

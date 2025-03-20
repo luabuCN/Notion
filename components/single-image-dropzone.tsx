@@ -31,16 +31,16 @@ type InputProps = {
 
 const ERROR_MESSAGES = {
   fileTooLarge(maxSize: number) {
-    return `The file is too large. Max size is ${formatFileSize(maxSize)}.`;
+    return `文件太大了。最大大小为 ${formatFileSize(maxSize)}。`;
   },
   fileInvalidType() {
-    return "Invalid file type.";
+    return "无效的文件类型。";
   },
   tooManyFiles(maxFiles: number) {
-    return `You can only add ${maxFiles} file(s).`;
+    return `您只能添加 ${maxFiles} 个文件。`;
   },
   fileNotSupported() {
-    return "The file is not supported.";
+    return "该文件不受支持。";
   },
 };
 
@@ -51,16 +51,16 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const imageUrl = React.useMemo(() => {
       if (typeof value === "string") {
-        // in case an url is passed in, use it to display the image
+        // 如果传入的是 URL，则使用它来显示图像
         return value;
       } else if (value) {
-        // in case a file is passed in, create a base64 url to display the image
+        // 如果传入的是文件，则创建一个 base64 URL 来显示图像
         return URL.createObjectURL(value);
       }
       return null;
     }, [value]);
 
-    // dropzone configuration
+    // dropzone 配置
     const {
       getRootProps,
       getInputProps,
@@ -82,7 +82,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       ...dropzoneOptions,
     });
 
-    // styling
+    // 样式
     const dropZoneClassName = React.useMemo(
       () =>
         twMerge(
@@ -105,7 +105,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       ]
     );
 
-    // error validation messages
+    // 错误验证消息
     const errorMessage = React.useMemo(() => {
       if (fileRejections[0]) {
         const { errors } = fileRejections[0];
@@ -138,27 +138,25 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             },
           })}
         >
-          {/* Main File Input */}
+          {/* 主文件输入 */}
           <input ref={ref} {...getInputProps()} />
 
           {imageUrl ? (
-            // Image Preview
+            // 图像预览
             <Image
               className="h-full w-full rounded-md object-cover"
               src={imageUrl}
               alt={acceptedFiles[0]?.name}
             />
           ) : (
-            // Upload Icon
+            // 上传图标
             <div className="flex flex-col items-center justify-center text-xs text-gray-400">
               <UploadCloudIcon className="mb-2 h-7 w-7" />
-              <div className="text-gray-400">
-                Click or file to this area to upload
-              </div>
+              <div className="text-gray-400">点击或将文件拖到此区域上传</div>
             </div>
           )}
 
-          {/* Remove Image Icon */}
+          {/* 移除图像图标 */}
           {imageUrl && !disabled && (
             <div
               className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
@@ -178,7 +176,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        {/* Error Text */}
+        {/* 错误文本 */}
         <div className="mt-1 text-xs text-red-500">{errorMessage}</div>
       </div>
     );
@@ -193,11 +191,11 @@ const Button = React.forwardRef<
   return (
     <button
       className={twMerge(
-        // base
+        // 基础
         "focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50",
-        // color
+        // 颜色
         "border border-gray-400 text-gray-400 shadow hover:bg-gray-100 hover:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700",
-        // size
+        // 尺寸
         "h-6 rounded-md px-2 text-xs",
         className
       )}

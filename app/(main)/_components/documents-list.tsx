@@ -38,7 +38,7 @@ const DocumentsList = ({
     router.push(`/documents/${documentId}`);
   };
 
-  if (document === undefined) {
+  if (documents === undefined) {
     return (
       <>
         <Item.Skeleton level={level} />
@@ -63,7 +63,7 @@ const DocumentsList = ({
           level === 0 && "hidden"
         )}
       >
-        No documents
+        没有文档
       </p>
       {documents?.map((document) => (
         <div key={document._id}>

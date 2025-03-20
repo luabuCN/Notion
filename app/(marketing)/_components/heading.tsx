@@ -10,13 +10,13 @@ const Heading = () => {
   const { isAuthenticated, isLoading } = useConvexAuth();
   return (
     <div className=" max-w-3xl space-y-4">
-      <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold">
-        Your Ideas, Documents & Plans. Unified. Welcome to&nbsp;
+      <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mt-5">
+        你的想法、文档和计划。统一。欢迎来到&nbsp;
         <span className="underline">Jotion</span>
       </h1>
       <p className="text-base sm:text-xl md:text-2xl font-medium">
-        Jotion is the connected workspace where <br />
-        better, faster work happens
+        Jotion 是一个连接的工作空间，在这里 <br />
+        更好、更快的工作发生
       </p>
       {isLoading && (
         <div className="w-full flex items-center justify-center">
@@ -26,14 +26,14 @@ const Heading = () => {
       {isAuthenticated && !isLoading && (
         <Button asChild>
           <Link href="/documents">
-            Get Jotion <ArrowRight className="h-4 w-4 ml-2" />
+            获取 Jotion <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
         </Button>
       )}
       {!isAuthenticated && !isLoading && (
         <SignInButton mode="modal">
           <Button>
-            Get Jotion free <ArrowRight className="h-4 w-4 ml-2" />
+            免费获取 Jotion <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </SignInButton>
       )}

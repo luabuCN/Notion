@@ -45,10 +45,10 @@ const SearchCommand = () => {
   }
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
-      <CommandInput placeholder={`Search all ${user?.fullName} documents...`} />
+      <CommandInput placeholder={`搜索所有 ${user?.fullName} 的文档...`} />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Documents">
+        <CommandEmpty>未找到结果。</CommandEmpty>
+        <CommandGroup heading="文档">
           {documents?.map((doc) => (
             <CommandItem
               key={doc._id}
