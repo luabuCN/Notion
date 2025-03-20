@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useCreateDocument } from "../useQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ItemProps {
   id?: string;
@@ -52,6 +54,8 @@ const Item = ({
   const router = useRouter();
   const create = useMutation(api.documents.create);
   const archive = useMutation(api.documents.archive);
+  const { mutate } = useCreateDocument();
+  const queryClient = useQueryClient();
   const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!id) return;
     const promise = archive({ id });
@@ -71,17 +75,25 @@ const Item = ({
   const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     if (!id) return;
-    const promise = create({ title: "无标题", parentDocument: id }).then(
-      (documentId) => {
-        if (!expanded) {
-          onExpand?.();
-        }
-        router.push(`/documents/${documentId}`);
-        toast.promise(promise, {
-          loading: "正在创建新笔记...",
-          success: "新笔记已创建！",
-          error: "创建新笔记失败",
-        });
+    mutate(
+      {
+        title: "未命名",
+        parentDocumentId: id,
+      },
+      {
+        onSuccess: async (res) => {
+          await queryClient.invalidateQueries({
+            queryKey: ["sidebarDocuments"],
+          });
+          if (!expanded) {
+            onExpand?.();
+          }
+          router.push(`/documents/${res.id}`);
+          toast.success("新笔记已创建！");
+        },
+        onError: () => {
+          toast.error("创建新笔记失败");
+        },
       }
     );
   };

@@ -10,8 +10,11 @@ export const useSidebarDocuments = (parentDocumentId?: string) => {
 
 export const useCreateDocument = () => {
   return useMutation({
-    mutationFn: async (title: string, parentDocumentId?: string) => {
-      return createDocument(title, parentDocumentId);
+    mutationFn: async (params: {
+      title: string;
+      parentDocumentId?: string;
+    }) => {
+      return createDocument(params.title, params.parentDocumentId);
     },
   });
 };

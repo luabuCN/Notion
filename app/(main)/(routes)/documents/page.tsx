@@ -14,16 +14,23 @@ const Documents = () => {
   const { mutate } = useCreateDocument();
   const queryClient = useQueryClient();
   const onCreate = () => {
-    mutate("未命名", {
-      onSuccess: async (res) => {
-        await queryClient.invalidateQueries({ queryKey: ["sidebarDocuments"] });
-        router.push(`/documents/${res.id}`);
-        toast.success("新笔记已创建！");
+    mutate(
+      {
+        title: "未命名",
       },
-      onError: () => {
-        toast.error("创建新笔记失败");
-      },
-    });
+      {
+        onSuccess: async (res) => {
+          await queryClient.invalidateQueries({
+            queryKey: ["sidebarDocuments"],
+          });
+          router.push(`/documents/${res.id}`);
+          toast.success("新笔记已创建！");
+        },
+        onError: () => {
+          toast.error("创建新笔记失败");
+        },
+      }
+    );
   };
 
   return (
