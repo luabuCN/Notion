@@ -6,6 +6,10 @@ import {
   getTrashDocuments,
   remove,
   restore,
+  getDocumentById,
+  getSearch,
+  updateDoc,
+  type IUpdate,
 } from "@/app/actions/document";
 
 export const useSidebarDocuments = (parentDocumentId?: string) => {
@@ -13,6 +17,12 @@ export const useSidebarDocuments = (parentDocumentId?: string) => {
     queryKey: ["sidebarDocuments", parentDocumentId],
     queryFn: () => getSidebar(parentDocumentId),
     staleTime: 0,
+  });
+};
+export const useDocumentQuery = (documentId: string) => {
+  return useQuery({
+    queryKey: ["document", documentId],
+    queryFn: () => getDocumentById(documentId),
   });
 };
 
@@ -55,6 +65,21 @@ export const useRemove = () => {
   return useMutation({
     mutationFn: async (documentId: string) => {
       return remove(documentId);
+    },
+  });
+};
+
+export const useSearch = () => {
+  return useQuery({
+    queryKey: ["search"],
+    queryFn: () => getSearch(),
+  });
+};
+
+export const useUpdateDoc = () => {
+  return useMutation({
+    mutationFn: async (params: IUpdate) => {
+      return updateDoc(params);
     },
   });
 };

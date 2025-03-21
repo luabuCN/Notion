@@ -10,41 +10,17 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { getDocumentById } from "@/app/actions/document";
 import { Document } from "@prisma/client";
-
+import { useDocumentQuery } from "@/app/(main)/useDocumentQuery";
 interface DocumentIdPageProps {
   params: { documentId: string };
 }
 
 const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
-  // const Editor = useMemo(
-  //   () =>
-  //     dynamic(() => import("@/components/editor"), {
-  //       ssr: false,
-  //     }),
-  //   []
-  // );
-  const [document, setDocuments] = useState<Document>();
-  // const document = useQuery(api.documents.getById, {
-  //   documentId: params.documentId,
-  // });
+  const { data: document, isLoading } = useDocumentQuery(
+    params.documentId as string
+  );
 
-  // const update = useMutation(api.documents.update);
-
-  useEffect(() => {
-    const fetchDocument = async () => {
-      const res = await getDocumentById(params.documentId);
-      res && setDocuments(res);
-    };
-    fetchDocument();
-  }, [params.documentId]);
-
-  // const handleChange = (content: string) => {
-  //   update({
-  //     id: params.documentId,
-  //     content,
-  //   });
-  // };
-  if (document === undefined) {
+  if (isLoading) {
     <div>
       <Cover.Skeleton />
       <div className="md:max-w-3xl lg:max-w-4xl mx-auto mt-10">
@@ -68,7 +44,6 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
       </div>
       <div className="mx-auto md:max-w-3xl lg:max-w-4xl">
         <Toolbar initialData={document!} />
-        {/* <Editor onChange={handleChange} initialContent={document?.content} /> */}
       </div>
     </div>
   );

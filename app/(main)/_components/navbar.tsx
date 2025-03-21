@@ -9,9 +9,7 @@ import Title from "./title";
 import Banner from "./banner";
 import Menu from "./menu";
 import Publish from "./publish";
-import { getDocumentById } from "@/app/actions/document";
-import { Document } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useDocumentQuery } from "@/app/(main)/useDocumentQuery";
 
 interface NavBarProps {
   isCollapsed: boolean;
@@ -20,16 +18,11 @@ interface NavBarProps {
 
 const NavBar = ({ isCollapsed, onResetWidth }: NavBarProps) => {
   const params = useParams();
-  const [document, setDocuments] = useState<Document>();
-  useEffect(() => {
-    const fetchDocument = async () => {
-      const res = await getDocumentById(params.documentId as string);
-      res && setDocuments(res);
-    };
-    fetchDocument();
-  }, [params.documentId]);
+  const { data: document, isLoading } = useDocumentQuery(
+    params.documentId as string
+  );
 
-  if (document === undefined) {
+  if (isLoading) {
     return (
       <nav className="flex w-full items-center gap-x-4 bg-background px-3 py-2 dark:bg-[#1F1F1F] justify-between">
         <Title.skeleton />
@@ -53,14 +46,14 @@ const NavBar = ({ isCollapsed, onResetWidth }: NavBarProps) => {
           />
         )}
         <div className="flex items-center justify-between w-full">
-          <Title initialData={document} />
+          <Title initialData={document!} />
           <div className=" flex items-center gap-x-2">
-            <Publish initialData={document} />
-            <Menu documentId={document.id} />
+            <Publish initialData={document!} />
+            <Menu documentId={document!.id} />
           </div>
         </div>
       </nav>
-      {document.isArchived && <Banner documentId={document.id} />}
+      {document!.isArchived && <Banner documentId={document!.id} />}
     </>
   );
 };

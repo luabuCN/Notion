@@ -1,11 +1,10 @@
 "use client";
 
-import { api } from "@/convex/_generated/api";
 import { uesSearch } from "@/hooks/user-search";
 import { useUser } from "@clerk/clerk-react";
-import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSearch } from "@/app/(main)/useDocumentQuery";
 import {
   CommandDialog,
   CommandEmpty,
@@ -19,12 +18,11 @@ import { File } from "lucide-react";
 const SearchCommand = () => {
   const { user } = useUser();
   const router = useRouter();
-  const documents = useQuery(api.documents.getSearch);
   const [isMounted, setIsMounted] = useState(false);
   const toggle = uesSearch((store) => store.toggle);
   const isOpen = uesSearch((store) => store.isOpen);
   const onClose = uesSearch((store) => store.onClose);
-
+  const { data: documents } = useSearch();
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -51,11 +49,11 @@ const SearchCommand = () => {
         <CommandGroup heading="文档">
           {documents?.map((doc) => (
             <CommandItem
-              key={doc._id}
-              value={`${doc._id}-${doc.title}`}
+              key={doc.id}
+              value={`${doc.id}-${doc.title}`}
               title={doc.title}
               onSelect={() => {
-                router.push(`/documents/${doc._id}`);
+                router.push(`/documents/${doc.id}`);
                 onClose();
               }}
             >

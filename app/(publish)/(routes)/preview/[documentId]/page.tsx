@@ -2,16 +2,13 @@
 
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import Toolbar from "@/app/(main)/_components/Toobar";
 import Cover from "@/components/cover";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { useDocumentQuery } from "@/app/(main)/useDocumentQuery";
 interface DocumentIdPageProps {
   params: {
-    documentId: Id<"documents">;
+    documentId: string;
   };
 }
 
@@ -20,21 +17,11 @@ export default function DocumentIdPage({ params }: DocumentIdPageProps) {
     () => dynamic(() => import("@/components/editor"), { ssr: false }),
     []
   );
+  const { data: document, isLoading } = useDocumentQuery(
+    params.documentId as string
+  );
 
-  const document = useQuery(api.documents.getById, {
-    documentId: params.documentId,
-  });
-
-  const update = useMutation(api.documents.update);
-
-  const handleChange = (content: string) => {
-    update({
-      id: params.documentId,
-      content,
-    });
-  };
-
-  if (document === undefined) {
+  if (isLoading) {
     return (
       <div>
         <Cover.Skeleton />
@@ -56,14 +43,14 @@ export default function DocumentIdPage({ params }: DocumentIdPageProps) {
 
   return (
     <section className="pb-40">
-      <Cover preview url={document.coverImage} />
+      <Cover preview url={document?.coverImage} />
       <div className="mx-auto md:max-w-3xl lg:max-w-4xl">
-        <Toolbar preview initialData={document} />
-        <Editor
+        <Toolbar preview initialData={document!} />
+        {/* <Editor
           editable={false}
           onChange={handleChange}
-          initialContent={document.content}
-        />
+          initialContent={document?.content}
+        /> */}
       </div>
     </section>
   );

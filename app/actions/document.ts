@@ -2,7 +2,14 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-
+export interface IUpdate {
+  id: string;
+  title?: string;
+  content?: string;
+  coverImage?: string;
+  icon?: string;
+  isPublished?: boolean;
+}
 export async function createDocument(title: string, parentDocumentId?: string) {
   const { userId } = await auth();
   if (!userId) {
@@ -60,14 +67,15 @@ export async function archive(documentId: string) {
 
   const existingDocument = await prisma.document.findUnique({
     where: {
-      userId,
       id: documentId,
     },
   });
   if (!existingDocument) {
     throw new Error("文档不存在");
   }
-
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
   const archiveDocumentsRecursively = async (docId: string) => {
     const childrenDocuments = await prisma.document.findMany({
       where: {
@@ -122,13 +130,15 @@ export async function restore(documentId: string) {
   }
 
   const existingDocument = await prisma.document.findUnique({
-    where: { id: documentId, userId },
+    where: { id: documentId },
   });
 
   if (!existingDocument) {
     throw new Error("文档不存在");
   }
-
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
   // 递归恢复文档
   const recursiveRestore = async (parentId: string) => {
     const children = await prisma.document.findMany({
@@ -176,16 +186,69 @@ export async function remove(documentId: string) {
   }
 
   const existingDocument = await prisma.document.findUnique({
-    where: { id: documentId, userId },
+    where: { id: documentId },
   });
 
   if (!existingDocument) {
     throw new Error("文档不存在");
   }
-
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
   const deletedDocument = await prisma.document.delete({
     where: { id: documentId },
   });
 
   return deletedDocument;
+}
+
+export async function getSearch() {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("未授权");
+  }
+  const documents = await prisma.document.findMany({
+    where: {
+      userId,
+      isArchived: false,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return documents;
+}
+export async function updateDoc({
+  id,
+  title,
+  content,
+  coverImage,
+  icon,
+  isPublished,
+}: IUpdate) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("未授权");
+  }
+  const existingDocument = await prisma.document.findUnique({
+    where: { id },
+  });
+  if (!existingDocument) {
+    throw new Error("文档未找到");
+  }
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
+
+  const document = await prisma.document.update({
+    where: { id },
+    data: {
+      ...(title !== undefined && { title }),
+      ...(content !== undefined && { content }),
+      ...(coverImage !== undefined && { coverImage }),
+      ...(icon !== undefined && { icon }),
+      ...(isPublished !== undefined && { isPublished }),
+    },
+  });
+  return document;
 }
