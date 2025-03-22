@@ -4,15 +4,13 @@ import { useCoverImage } from "@/hooks/use-cover-image";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { useState } from "react";
 import { useEdgeStore } from "@/lib/edgestore";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
-import type { Id } from "@/convex/_generated/dataModel";
 import { SingleImageDropzone } from "../single-image-dropzone";
+import { useUpdateDoc } from "@/app/(main)/useDocumentQuery";
 
 const CoverImageModal = () => {
   const params = useParams();
-  const update = useMutation(api.documents.update);
+  const { mutate: update } = useUpdateDoc();
   const [file, setFile] = useState<File>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { edgestore } = useEdgeStore();
@@ -28,7 +26,6 @@ const CoverImageModal = () => {
     if (file) {
       setIsSubmitting(true);
       setFile(file);
-
       const res = await edgestore.publicFiles.upload({
         options: {
           replaceTargetUrl: coverImage.url,
@@ -36,8 +33,8 @@ const CoverImageModal = () => {
         file,
       });
 
-      await update({
-        id: params.documentId as Id<"documents">,
+      update({
+        id: params.documentId as string,
         coverImage: res.url,
       });
 

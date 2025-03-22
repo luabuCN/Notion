@@ -14,44 +14,56 @@ import { Check, Copy, Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Document } from "@prisma/client";
+import { useUpdateDoc } from "../useDocumentQuery";
 interface PublishProps {
   initialData: Document;
 }
 
 const Publish = ({ initialData }: PublishProps) => {
   const origin = useOrigin();
-  const update = useMutation(api.documents.update);
-
+  const { mutate: update } = useUpdateDoc();
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const url = `${origin}/preview/${initialData._id}`;
+  const url = `${origin}/preview/${initialData.id}`;
 
   const onPublish = () => {
     setIsSubmitting(true);
-    const promise = update({
-      id: initialData._id,
-      isPublished: true,
-    }).finally(() => setIsSubmitting(false));
-    toast.promise(promise, {
-      loading: "发布中...",
-      success: "文档已发布",
-      error: "发布文档失败",
-    });
+    update(
+      {
+        id: initialData.id,
+        isPublished: true,
+      },
+      {
+        onSuccess: () => {
+          toast.success("文档已发布");
+          setIsSubmitting(false);
+        },
+        onError: () => {
+          toast.error("发布文档失败");
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const handleUnpublish = () => {
     setIsSubmitting(true);
-
-    const promise = update({
-      id: initialData._id,
-      isPublished: false,
-    }).finally(() => setIsSubmitting(false));
-
-    toast.promise(promise, {
-      loading: "取消发布中...",
-      success: "笔记已取消发布！",
-      error: "取消发布笔记失败。",
-    });
+    update(
+      {
+        id: initialData.id,
+        isPublished: false,
+      },
+      {
+        onSuccess: () => {
+          toast.success("笔记已取消发布！");
+          setIsSubmitting(false);
+        },
+        onError: () => {
+          toast.error("取消发布笔记失败");
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
 
   const onCopy = () => {

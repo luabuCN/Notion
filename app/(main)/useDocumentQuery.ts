@@ -77,9 +77,18 @@ export const useSearch = () => {
 };
 
 export const useUpdateDoc = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (params: IUpdate) => {
       return updateDoc(params);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["sidebarDocuments"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["document"],
+      });
     },
   });
 };

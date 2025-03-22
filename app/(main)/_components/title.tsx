@@ -3,11 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
 import { useRef, useState } from "react";
 import { Document } from "@prisma/client";
+import { useUpdateDoc } from "@/app/(main)/useDocumentQuery";
+import { useQueryClient } from "@tanstack/react-query";
 interface TitleProps {
   initialData: Document;
 }
@@ -15,8 +14,9 @@ interface TitleProps {
 const Title = ({ initialData }: TitleProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(initialData.title || "Untitled");
-  const update = useMutation(api.documents.update);
   const [isEditing, setIsEditing] = useState(false);
+  const { mutate: update } = useUpdateDoc();
+  const queryClient = useQueryClient();
 
   const enableInput = () => {
     setTitle(initialData.title);
@@ -34,8 +34,8 @@ const Title = ({ initialData }: TitleProps) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     update({
-      id: initialData._id,
-      title: e.target.value || "Untitled",
+      id: initialData.id,
+      title: e.target.value || "未命名",
     });
   };
 

@@ -10,6 +10,9 @@ import { ImageIcon, Smile, X } from "lucide-react";
 import { useRef, useState, type ElementRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { Document } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUpdateDoc } from "../useDocumentQuery";
+import { toast } from "sonner";
 interface ToolbarProps {
   initialData: Document;
   preview?: boolean;
@@ -18,9 +21,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   const inputRef = useRef<ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialData?.title);
-
-  const update = useMutation(api.documents.update);
-  const removeIcon = useMutation(api.documents.removeIcon);
+  const { mutate: update } = useUpdateDoc();
   const coverImage = useCoverImage();
   const enableInput = () => {
     if (preview) return;
@@ -39,7 +40,12 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   const onInput = (value: string) => {
     setValue(value);
     update({
-      id: initialData._id,
+      id: initialData.id,
+      title: value || "未命名",
+    });
+
+    update({
+      id: initialData.id,
       title: value || "未命名",
     });
   };
@@ -51,16 +57,26 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   };
 
   const onIconSelect = (icon: string) => {
-    update({
-      id: initialData._id,
-      icon,
-    });
+    update(
+      {
+        id: initialData.id,
+        icon,
+      },
+      {
+        onSuccess: async () => {
+          toast.success("图标已更新");
+        },
+        onError: () => {
+          toast.error("图标更新失败");
+        },
+      }
+    );
   };
 
   const onRemoveIcon = () => {
-    removeIcon({
-      id: initialData._id,
-    });
+    // removeIcon({
+    //   id: initialData._id,
+    // });
   };
 
   return (
@@ -68,7 +84,9 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
       {!!initialData?.icon && !preview && (
         <div className="flex items-center gap-x-2 group/icon pt-6">
           <IconPicker onChange={onIconSelect}>
-            <p className=" text-6xl hover:opacity-75 transition">{initialData.icon}</p>
+            <p className=" text-6xl hover:opacity-75 transition">
+              {initialData.icon}
+            </p>
           </IconPicker>
           <Button
             onClick={onRemoveIcon}
@@ -80,11 +98,17 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
           </Button>
         </div>
       )}
-      {!!initialData?.icon && preview && <p className=" text-6xl pt-6">{initialData?.icon}</p>}
+      {!!initialData?.icon && preview && (
+        <p className=" text-6xl pt-6">{initialData?.icon}</p>
+      )}
       <div className=" opacity-0 group-hover:opacity-100 flex items-center gap-x-1 py-4">
         {!initialData?.icon && !preview && (
           <IconPicker onChange={onIconSelect}>
-            <Button className=" text-muted-foreground text-xs" variant="outline" size="sm">
+            <Button
+              className=" text-muted-foreground text-xs"
+              variant="outline"
+              size="sm"
+            >
               <Smile className=" h-4 w-4 mr-2" />
               添加图标
             </Button>
@@ -92,7 +116,12 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         )}
 
         {!initialData?.coverImage && !preview && (
-          <Button onClick={coverImage.onOpen} className=" text-muted-foreground text-xs" variant="outline" size="sm">
+          <Button
+            onClick={coverImage.onOpen}
+            className=" text-muted-foreground text-xs"
+            variant="outline"
+            size="sm"
+          >
             <ImageIcon className=" h-4 w-4 mr-2" />
             添加封面
           </Button>
