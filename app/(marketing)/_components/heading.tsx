@@ -1,13 +1,10 @@
 "use client";
-
-import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
-import { SignInButton } from "@clerk/clerk-react";
-import { useConvexAuth } from "convex/react";
+import { SignInButton, useUser } from "@clerk/clerk-react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 const Heading = () => {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isSignedIn} = useUser()
   return (
     <div className=" max-w-3xl space-y-4">
       <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mt-5">
@@ -18,19 +15,19 @@ const Heading = () => {
         Jotion 是一个连接的工作空间，在这里 <br />
         更好、更快的工作发生
       </p>
-      {isLoading && (
+      {/* {isLoaded && (
         <div className="w-full flex items-center justify-center">
           <Spinner />
         </div>
-      )}
-      {isAuthenticated && !isLoading && (
+      )} */}
+      {isSignedIn && (
         <Button asChild>
           <Link href="/documents">
             获取 Jotion <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
         </Button>
       )}
-      {!isAuthenticated && !isLoading && (
+      {!isSignedIn  && (
         <SignInButton mode="modal">
           <Button>
             免费获取 Jotion <ArrowRight className="h-4 w-4 ml-2" />

@@ -2,11 +2,9 @@
 
 import ConfirmModal from "@/components/modals/confirm-modal";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useRemove, useRestore } from "../useDocumentQuery";
 
 interface BannerProps {
   documentId: string;
@@ -14,32 +12,30 @@ interface BannerProps {
 
 const Banner = ({ documentId }: BannerProps) => {
   const router = useRouter();
-  const remove = useMutation(api.documents.remove);
-  const restore = useMutation(api.documents.restore);
+  const { mutate:remove } = useRemove()
+  const { mutate:restore } = useRestore();
 
   const onRemove = () => {
-    const promise = remove({ id: documentId });
-
-    toast.promise(promise, {
-      loading: "正在删除笔记...",
-
-      success: "笔记删除成功",
-
-      error: "删除笔记失败",
-    });
-    router.push("/documents");
+    remove(documentId, {
+      onSuccess: () => {
+        toast.success("笔记已删除");
+        router.push("/documents");
+      },
+      onError: () => {
+        toast.error("删除笔记失败");
+      },
+    })
   };
 
   const onRestore = () => {
-    const promise = restore({ id: documentId });
-
-    toast.promise(promise, {
-      loading: "正在恢复笔记...",
-
-      success: "笔记恢复成功",
-
-      error: "恢复笔记失败",
-    });
+  restore(documentId, {
+    onSuccess: () => {
+      toast.success("笔记已恢复！");
+    },
+    onError: () => {
+      toast.error("恢复笔记失败。");
+    },
+  });
   };
 
   return (

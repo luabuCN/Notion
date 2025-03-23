@@ -2,15 +2,11 @@
 
 import IconPicker from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
 import { useCoverImage } from "@/hooks/use-cover-image";
-import { useMutation } from "convex/react";
 import { ImageIcon, Smile, X } from "lucide-react";
 import { useRef, useState, type ElementRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { Document } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateDoc } from "../useDocumentQuery";
 import { toast } from "sonner";
 interface ToolbarProps {

@@ -10,6 +10,11 @@ export interface IUpdate {
   icon?: string;
   isPublished?: boolean;
 }
+
+export async function getUser() {
+  const { userId } = await auth()
+  return userId;
+}
 export async function createDocument(title: string, parentDocumentId?: string) {
   const { userId } = await auth();
   if (!userId) {

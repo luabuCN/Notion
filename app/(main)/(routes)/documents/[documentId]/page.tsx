@@ -3,13 +3,6 @@
 import Toolbar from "@/app/(main)/_components/Toobar";
 import Cover from "@/components/cover";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
-import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
-import { getDocumentById } from "@/app/actions/document";
-import { Document } from "@prisma/client";
 import { useDocumentQuery } from "@/app/(main)/useDocumentQuery";
 interface DocumentIdPageProps {
   params: { documentId: string };

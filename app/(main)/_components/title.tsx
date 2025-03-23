@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRef, useState } from "react";
 import { Document } from "@prisma/client";
 import { useUpdateDoc } from "@/app/(main)/useDocumentQuery";
-import { useQueryClient } from "@tanstack/react-query";
 interface TitleProps {
   initialData: Document;
 }
@@ -16,7 +15,6 @@ const Title = ({ initialData }: TitleProps) => {
   const [title, setTitle] = useState(initialData.title || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
   const { mutate: update } = useUpdateDoc();
-  const queryClient = useQueryClient();
 
   const enableInput = () => {
     setTitle(initialData.title);

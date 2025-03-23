@@ -8,14 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import { useMutation } from "convex/react";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useArchive } from "../useDocumentQuery";
 
 interface MenuProps {
   documentId: string;
@@ -24,17 +22,19 @@ interface MenuProps {
 const Menu = ({ documentId }: MenuProps) => {
   const router = useRouter();
   const { user } = useUser();
-
-  const archive = useMutation(api.documents.archive);
+  const { mutate:archive } = useArchive()
 
   const onArchive = () => {
-    const promise = archive({ id: documentId });
-    toast.promise(promise, {
-      loading: "移动到回收站...",
-      success: "笔记已移至回收站！",
-      error: "移动到回收站失败",
+    archive(documentId, {
+      onSuccess: () => {
+        toast.success("笔记已移至回收站！");
+        router.push("/documents");
+      },
+      onError: () => {
+        toast.error("移动到回收站失败");
+      },
     });
-    router.push("/documents");
+    
   };
 
   return (

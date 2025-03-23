@@ -38,9 +38,15 @@ export const useCreateDocument = () => {
 };
 
 export const useArchive = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (parentDocumentId: string) => {
       return archive(parentDocumentId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["sidebarDocuments"],
+      });
     },
   });
 };
@@ -54,17 +60,35 @@ export const useTrashDocuments = () => {
 };
 
 export const useRestore = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (documentId: string) => {
       return restore(documentId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["sidebarDocuments"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["document"],
+      });
     },
   });
 };
 
 export const useRemove = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (documentId: string) => {
       return remove(documentId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["sidebarDocuments"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["document"],
+      });
     },
   });
 };
