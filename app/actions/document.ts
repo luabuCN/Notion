@@ -12,7 +12,7 @@ export interface IUpdate {
 }
 
 export async function getUser() {
-  const { userId } = await auth()
+  const { userId } = await auth();
   return userId;
 }
 export async function createDocument(title: string, parentDocumentId?: string) {
@@ -254,6 +254,27 @@ export async function updateDoc({
       ...(icon !== undefined && { icon }),
       ...(isPublished !== undefined && { isPublished }),
     },
+  });
+  return document;
+}
+
+export async function removeCoverImage(documentId: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("未授权");
+  }
+  const existingDocument = await prisma.document.findUnique({
+    where: { id: documentId },
+  });
+  if (!existingDocument) {
+    throw new Error("文档未找到");
+  }
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
+  const document = await prisma.document.update({
+    where: { id: documentId },
+    data: { coverImage: null },
   });
   return document;
 }

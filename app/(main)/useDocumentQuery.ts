@@ -11,6 +11,7 @@ import {
   updateDoc,
   type IUpdate,
   getUser,
+  removeCoverImage,
 } from "@/app/actions/document";
 import { auth } from "@clerk/nextjs/server";
 
@@ -123,5 +124,19 @@ export const useIsLogon = () => {
   return useQuery({
     queryKey: ["isLogon"],
     queryFn: () => getUser(),
+  });
+};
+
+export const useRemoveCoverImage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      await removeCoverImage(documentId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["document"],
+      });
+    },
   });
 };
