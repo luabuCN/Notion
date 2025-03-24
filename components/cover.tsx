@@ -9,7 +9,6 @@ import { useParams } from "next/navigation";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Skeleton } from "./ui/skeleton";
 import { useRemoveCoverImage } from "@/app/(main)/useDocumentQuery";
-
 interface CoverProps {
   url?: string | null | undefined;
   preview?: boolean;

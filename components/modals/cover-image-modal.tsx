@@ -7,6 +7,7 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { useParams } from "next/navigation";
 import { SingleImageDropzone } from "../single-image-dropzone";
 import { useUpdateDoc } from "@/app/(main)/useDocumentQuery";
+import { UploadDropzone } from "@/lib/uploadthing";
 
 const CoverImageModal = () => {
   const params = useParams();
@@ -46,14 +47,26 @@ const CoverImageModal = () => {
     <Dialog open={coverImage.isOpen} onOpenChange={coverImage.onClose}>
       <DialogContent>
         <DialogHeader>
-          <h2 className=" text-center text-lg font-semibold">Cover Image</h2>
+          <h2 className=" text-center text-lg font-semibold">封面图片</h2>
         </DialogHeader>
-        <SingleImageDropzone
-          className=" w-full outline-none"
+        <UploadDropzone
+          endpoint="imageUploader"
           disabled={isSubmitting}
-          onChange={onChange}
-          value={file}
-        ></SingleImageDropzone>
+          onClientUploadComplete={(res) => {
+            if (res && res.length > 0) {
+              // update({
+              //   id: params.documentId as string,
+              //   coverImage: res[0].url,
+              // });
+              console.log(res, "image------");
+
+              onClose();
+            }
+          }}
+          onUploadError={(error) => {
+            console.error("上传失败:", error);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
