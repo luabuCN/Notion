@@ -10,7 +10,9 @@ import {
   getSearch,
   updateDoc,
   type IUpdate,
+  getUser,
 } from "@/app/actions/document";
+import { auth } from "@clerk/nextjs/server";
 
 export const useSidebarDocuments = (parentDocumentId?: string) => {
   return useQuery({
@@ -114,5 +116,12 @@ export const useUpdateDoc = () => {
         queryKey: ["document"],
       });
     },
+  });
+};
+
+export const useIsLogon = () => {
+  return useQuery({
+    queryKey: ["isLogon"],
+    queryFn: () => getUser(),
   });
 };

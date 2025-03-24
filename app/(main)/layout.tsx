@@ -5,9 +5,11 @@ import { useConvexAuth } from "convex/react";
 import { redirect } from "next/navigation";
 import Navigation from "./_components/navigation";
 import SearchCommand from "@/components/search-command";
+import { useUser } from "@clerk/clerk-react";
+import { useIsLogon } from "./useDocumentQuery";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading, isAuthenticated } = useConvexAuth();
+  const { data, isLoading } = useIsLogon();
   if (isLoading) {
     return (
       <div className=" h-full flex items-center justify-center">
@@ -15,7 +17,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  if (!isAuthenticated) {
+  if (!data) {
     return redirect("/");
   }
   return (
