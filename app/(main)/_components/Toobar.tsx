@@ -1,7 +1,7 @@
 "use client";
 
 import IconPicker from "@/components/icon-picker";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useCoverImage } from "@/hooks/use-cover-image";
 import { ImageIcon, Smile, X } from "lucide-react";
 import { useRef, useState, type ElementRef } from "react";
@@ -9,6 +9,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { Document } from "@prisma/client";
 import { useUpdateDoc } from "../useDocumentQuery";
 import { toast } from "sonner";
+import { UploadButton } from "@/lib/uploadthing";
+import { cn } from "@/lib/utils";
 interface ToolbarProps {
   initialData: Document;
   preview?: boolean;
@@ -18,7 +20,8 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialData?.title);
   const { mutate: update } = useUpdateDoc();
-  const coverImage = useCoverImage();
+  // const coverImage = useCoverImage();
+  
   const enableInput = () => {
     if (preview) return;
     setIsEditing(true);
@@ -97,11 +100,11 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
       {!!initialData?.icon && preview && (
         <p className=" text-6xl pt-6">{initialData?.icon}</p>
       )}
-      <div className=" opacity-0 group-hover:opacity-100 flex items-center gap-x-1 py-4">
+      <div className=" opacity-100 group-hover:opacity-100 flex items-center gap-x-1 py-4">
         {!initialData?.icon && !preview && (
           <IconPicker onChange={onIconSelect}>
             <Button
-              className=" text-muted-foreground text-xs"
+              className=" text-muted-foreground text-xs "
               variant="outline"
               size="sm"
             >
@@ -112,15 +115,42 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         )}
 
         {!initialData?.coverImage && !preview && (
-          <Button
-            onClick={coverImage.onOpen}
-            className=" text-muted-foreground text-xs"
-            variant="outline"
-            size="sm"
-          >
-            <ImageIcon className=" h-4 w-4 mr-2" />
-            添加封面
-          </Button>
+          // <Button
+          //   onClick={coverImage.onOpen}
+          //   className=" text-muted-foreground text-xs"
+          //   variant="outline"
+          //   size="sm"
+          // >
+          //   <ImageIcon className=" h-4 w-4 mr-2" />
+          //   添加封面
+          // </Button>
+          <UploadButton
+          className="ut-button:bg-white ut-button:text-muted-foreground"
+            appearance={{
+              button:cn(buttonVariants({ variant:'outline',size:'sm' }))
+            }}
+            content={{
+              button({ ready }) {
+                  return (
+                    <>
+                      <ImageIcon className=" h-4 w-4 mr-2" />
+                      添加封面
+                    </>
+                  );
+              },
+              allowedContent(){
+                return false
+              }
+            }}
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+              console.log(res, "res------------");
+              update({
+                id: initialData.id,
+                coverImage: res[0].ufsUrl,
+              });
+            }}
+          />
         )}
       </div>
       {isEditing && !preview ? (
