@@ -9,12 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@blocknote/core": "^0.10.1",
-    "@blocknote/react": "^0.10.1",
     "@clerk/clerk-react": "^4.28.0",
     "@clerk/nextjs": "^6.12.6",
-    "@edgestore/react": "^0.1.4",
-    "@edgestore/server": "^0.1.4",
     "@prisma/client": "^6.5.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
@@ -28,7 +24,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
-    "convex": "^1.6.2",
     "emoji-picker-react": "^4.5.16",
     "lucide-react": "^0.291.0",
     "next": "14.0.1",

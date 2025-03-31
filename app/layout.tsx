@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ClerkClientProvider } from "@/components/providers/clerk-provider";
 import { Toaster } from "sonner";
 import ModalProvider from "@/components/providers/modal-provider";
-import { EdgeStoreProvider } from "../lib/edgestore";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,21 +36,19 @@ export default function RootLayout({
     <html lang="zh" suppressHydrationWarning>
       <body className={inter.className}>
         <ClerkClientProvider>
-          <EdgeStoreProvider>
-            <ReactQueryProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-                storageKey="jotion-theme-2"
-              >
-                <Toaster position="bottom-center" />
-                <ModalProvider />
-                {children}
-              </ThemeProvider>
-            </ReactQueryProvider>
-          </EdgeStoreProvider>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              storageKey="jotion-theme-2"
+            >
+              <Toaster position="bottom-center" />
+              <ModalProvider />
+              {children}
+            </ThemeProvider>
+          </ReactQueryProvider>
         </ClerkClientProvider>
       </body>
     </html>

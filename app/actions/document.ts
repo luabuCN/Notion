@@ -278,3 +278,24 @@ export async function removeCoverImage(documentId: string) {
   });
   return document;
 }
+
+export async function removeIcon(documentId: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("未授权");
+  }
+  const existingDocument = await prisma.document.findUnique({
+    where: { id: documentId },
+  });
+  if (!existingDocument) {
+    throw new Error("文档未找到");
+  }
+  if (existingDocument.userId !== userId) {
+    throw new Error("无权限");
+  }
+  const document = await prisma.document.update({
+    where: { id: documentId },
+    data: { icon: null },
+  });
+  return document;
+}

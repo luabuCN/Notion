@@ -3,9 +3,7 @@
 import { useCoverImage } from "@/hooks/use-cover-image";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { useState } from "react";
-import { useEdgeStore } from "@/lib/edgestore";
 import { useParams } from "next/navigation";
-import { SingleImageDropzone } from "../single-image-dropzone";
 import { useUpdateDoc } from "@/app/(main)/useDocumentQuery";
 import { UploadDropzone } from "@/lib/uploadthing";
 
@@ -33,11 +31,10 @@ const CoverImageModal = () => {
           disabled={isSubmitting}
           onClientUploadComplete={(res) => {
             if (res && res.length > 0) {
-              // update({
-              //   id: params.documentId as string,
-              //   coverImage: res[0].url,
-              // });
-              console.log(res, "image------");
+              update({
+                id: params.documentId as string,
+                coverImage: res[0].url,
+              });
               onClose();
             }
           }}

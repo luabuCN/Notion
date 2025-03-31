@@ -12,6 +12,7 @@ import {
   type IUpdate,
   getUser,
   removeCoverImage,
+  removeIcon,
 } from "@/app/actions/document";
 import { auth } from "@clerk/nextjs/server";
 
@@ -134,6 +135,23 @@ export const useRemoveCoverImage = () => {
       await removeCoverImage(documentId);
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["document"],
+      });
+    },
+  });
+};
+
+export const useRemoveIcon = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      await removeIcon(documentId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["sidebarDocuments"],
+      });
       await queryClient.invalidateQueries({
         queryKey: ["document"],
       });
