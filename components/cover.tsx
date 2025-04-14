@@ -8,39 +8,52 @@ import { useCoverImage } from "@/hooks/use-cover-image";
 import { useParams } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useRemoveCoverImage } from "@/app/(main)/useDocumentQuery";
+import { useEffect, useState } from "react";
 interface CoverProps {
   url?: string | null | undefined;
   preview?: boolean;
 }
 
 const Cover = ({ url, preview }: CoverProps) => {
+  console.log(url, "url---------");
+
   const coverImage = useCoverImage();
   const { mutate: removeCoverImage } = useRemoveCoverImage();
   const params = useParams();
 
+  // 使用 useState 来管理图片 URL
+  const [imageUrl, setImageUrl] = useState(url);
+
+  // 监听 URL 的变化
+  useEffect(() => {
+    setImageUrl(url);
+  }, [url]);
+
   const onRemove = async () => {
     removeCoverImage(params.documentId as string);
   };
+
   return (
     <div
       className={cn(
         "relative w-full h-[35vh] group",
-        !url && "h-[12vh]",
-        url && "bg-muted"
+        !imageUrl && "h-[12vh]",
+        imageUrl && "bg-muted"
       )}
     >
-      {!!url && (
+      {!!imageUrl && (
         <Image
-          src={url}
+          src={imageUrl}
           fill
+          unoptimized
           alt="封面"
           className="object-cover w-full h-full"
         />
       )}
-      {url && !preview && (
+      {imageUrl && !preview && (
         <div className=" opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
           <Button
-            onClick={() => coverImage.onReplace(url)}
+            onClick={() => coverImage.onReplace(imageUrl)}
             variant="outline"
             size="sm"
             className=" text-muted-foreground text-xs"

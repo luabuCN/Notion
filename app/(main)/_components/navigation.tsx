@@ -9,6 +9,7 @@ import {
   Search,
   Settings,
   Trash,
+  Sparkle,
 } from "lucide-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import {
@@ -80,6 +81,10 @@ const Navigation = () => {
         `calc(100% - ${newWidth}px)`
       );
     }
+  };
+
+  const toAiChat = () => {
+    router.push("/documents/chat");
   };
 
   const handleMouseUp = () => {
@@ -166,6 +171,12 @@ const Navigation = () => {
           <UserItem />
           <Item label="搜索" icon={Search} isSearch onClick={search.onOpen} />
           <Item label="设置" icon={Settings} onClick={settings.onOpen} />
+          <Item
+            label="Notion Ai"
+            icon={Sparkle}
+            onClick={toAiChat}
+            active={pathname?.includes("chat")}
+          />
           <Item onClick={handleCreate} label="新页面" icon={PlusCircle} />
         </div>
         <div className="mt-4">
